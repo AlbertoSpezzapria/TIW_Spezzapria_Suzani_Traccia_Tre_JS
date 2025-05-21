@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Verbale</title>
+    <link rel="stylesheet" href="/css/style.css"> 
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="top-bar">
+            <h3 class="heading-lg">Verbale</h3>
+            <a th:href="@{/Logout}">
+                <button class="btn btn-logout">Logout</button>
+            </a>
+        </div>
+
+        <div class="mb-4">
+            <p><strong>Data e ora verbalizzazione:</strong> <span th:text="${report.timestamp}">01/01/2024</span></p>
+        </div>
+
+        <h4 class="heading-md">Esiti</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Matricola</th>
+                    <th>Esito</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s : ${reportRaw}">
+                    <td th:text="${s.idStudent}">123456</td>
+                    <td th:switch="${s.grade}">
+                        <span th:case="31">30 e lode</span>
+                        <span th:case="-1">Assente</span>
+                        <span th:case="-2">Rimandato</span>
+                        <span th:case="-3">Riprovato</span>
+                        <span th:case="*" th:text="${s.grade}">-</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a th:href="@{/GetAllReports}">
+                <button class="btn btn-small">Tutti i verbali</button>
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

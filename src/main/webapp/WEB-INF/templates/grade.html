@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grade page</title>
+</head>
+<body>
+	<div align="right">
+		<a href="login.html" th:href="@{/Logout}"><button>Logout</button></a>
+	</div>
+	<h1 th:text="${course.name} + ': ' + ${examination.date}">Nome Corso: Data</h1>
+    <h3>Valutazione</h3>  
+    <div th:if="${student!=null}">
+	    <fieldset>
+	    	<fieldset>
+	    	<legend>Studente</legend>
+	    	<table>
+	    		<thead>
+	    		<tr>
+	    			<th>Matricola</th>
+	    			<th>Cognome</th>
+	    			<th>Nome</th>
+	    		</tr>
+		    	</thead>
+		    	<tbody>
+					<tr>
+						<td th:text="${student.idStudent}">123456</td>
+						<td th:text="${student.surname}">Rossi</td>
+						<td th:text="${student.name}">Paolo</td>
+					</tr>
+				</tbody>
+	    	</table>
+	    	</fieldset>
+	    	<fieldset>
+	    	<legend>Esito</legend>
+	    	<div th:if="${student.grade >= 18 && student.evaluationState != 'rifiutato'}">
+	    		<p th:text="${student.grade==31}? '30 e lode' : ${student.grade}" ></p>
+	    	</div>
+	    	<div th:if="${student.grade < 18}">
+	    		<p>Rimandato</p>
+	    	</div>
+	    	<div th:if="${student.evaluationState == 'rifiutato'}">
+	    		<p>Il voto è stato rifiutato</p>
+	    	</div>
+	    	<div th:if="${student.grade >= 18 && student.evaluationState != 'rifiutato' && student.evaluationState != 'verbalizzato'}">
+	    		<a th:href="@{/RejectGrade(id=${examination.idExam})}"><button>Rifiuta</button></a>
+	    	</div>
+	    	</fieldset>
+	    </fieldset>
+     </div>
+    <div th:if="${student == null}">
+   		<p>Voto non ancora definito</p>
+   	</div>
+</body>
+</html>
+ 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/css/style.css"> 
+</head>
+<body>
+    <div class="container">
+        <h2>Benvenuto nell'applicazione WEB per verbalizzazione dei voti</h2>
+        <form action="CheckLogin" method="POST" class="form">
+            <fieldset>
+                <legend>Login</legend>
+
+                <label for="username">Utente</label>
+                <input class="input" type="text" id="username" name="username" placeholder="Username" required>
+
+                <label for="pwd">Password</label>
+                <input class="input" type="password" id="pwd" name="pwd" placeholder="Password" required>
+
+                <input type="submit" value="Login" class="btn-submit">
+            </fieldset>
+        </form>
+    </div>
+    <div th:if="${error == 'true'}" class="error-message">
+   		 <p>Credenziali errate</p>
+	</div>
+</body>
+</html>

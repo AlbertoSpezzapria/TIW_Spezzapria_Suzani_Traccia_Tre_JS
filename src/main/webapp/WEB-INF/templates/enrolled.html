@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Studenti Iscritti</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="container">
+
+	<div align="right">
+		<a href="login.html" th:href="@{/Logout}"><button>Logout</button></a>
+	</div>
+
+    <h1 th:text="${course.name} + ': ' + ${examination.date}" class="title">Nome Corso: Data</h1>
+    <h3 class="subtitle">Studenti iscritti all'appello</h3>
+
+    <div th:if="${not #lists.isEmpty(students)}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Matricola</th>
+                    <th>Cognome</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Corso di Laurea</th>
+                    <th>Esito</th>
+                    <th>Stato Valutazione</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s : ${students}">
+                    <td th:text="${s.idStudent}">123456</td>
+                    <td th:text="${s.surname}">Rossi</td>
+                    <td th:text="${s.name}">Paolo</td>
+                    <td th:text="${s.email}">paolo.rossi@gmail.com</td>
+                    <td th:text="${s.degree}">Ingegneria Informatica</td>
+					<td th:switch="${s.grade}">
+					    <span th:case="0">-</span>
+					    <span th:case="31">30L</span>
+					    <span th:case="-1">Assente</span>
+					    <span th:case="-2">Rimandato</span>
+					    <span th:case="-3">Riprovato</span>
+					    <span th:case="*"
+					          th:text="${s.grade}">--</span>
+					</td>
+                   <td th:text="${s.evaluationState}">Inserito</td>
+                    <td th:if="${s.evaluationState=='non-inserito' || s.evaluationState=='inserito'}">
+                        <a th:href="@{/GoToGradeForm(idExamination=${examination.idExam}, idStudent=${s.idStudent})}"><button class="btn btn-small">Modifica</button></a>  
+                   |</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <a th:href="@{/PublishGrade(id=${examination.idExam})}"><button class="btn btn-small">Pubblica</button></a>
+            <a th:href="@{/CreateReport(id=${examination.idExam})}"><button class="btn btn-small">Verbalizza</button></a>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(students)}" class="empty-message">
+        Non ci sono studenti iscritti per la data d'appello selezionata
+    </div>
+
+</body>
+</html>

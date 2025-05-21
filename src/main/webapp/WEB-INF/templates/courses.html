@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <span class="welcome-msg">
+                Bentornato, <strong th:text="${session.user.username}">Alberto</strong>
+            </span>
+            <div align="right">
+				<a href="login.html" th:href="@{/Logout}"><button>Logout</button></a>
+			</div>
+        </div>
+
+        <h1 th:if="${session.user.role == 'professor'}">Area Docente</h1>
+        <h1 th:if="${session.user.role == 'student'}">Area Studente</h1>
+
+        <h3>I tuoi corsi</h3>
+        <div th:if="${not #lists.isEmpty(courses)}">
+            <p>Seleziona un corso per visualizzare gli appelli:</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome del Corso</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="course : ${courses}">
+                        <td th:text="${course.name}">Analisi 1</td>
+                        <td>
+                            <a th:href="@{'/GetExamination?id=' + ${course.idCourse}}">
+                                <button class="btn btn-small">Visualizza Appelli</button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${#lists.isEmpty(courses)}">
+            <p>Attualmente non sono presenti corsi associati al tuo account.</p>
+        </div>
+
+        <div th:if="${session.user.role == 'professor'}" class="all-reports">
+            <form th:action="@{/GetAllReports}" method="get">
+                <button type="submit" class="btn btn-action">Visualizza Tutti i Verbali</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

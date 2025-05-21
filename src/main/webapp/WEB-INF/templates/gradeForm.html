@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>gradeForm page</title>
+</head>
+<body>
+	<div align="right">
+		<a href="login.html" th:href="@{/Logout}"><button>Logout</button></a>
+	</div>
+	<fieldset>
+	<legend>Studente</legend>
+	<table>
+   		<thead>
+   		<tr>
+   			<th>Matricola</th>
+   			<th>Cognome</th>
+   			<th>Nome</th>
+   		</tr>
+    	</thead>
+    	<tbody>
+			<tr>
+				<td th:text="${student.idStudent}">123456</td>
+				<td th:text="${student.surname}">Rossi</td>
+				<td th:text="${student.name}">Paolo</td>
+			</tr>
+		</tbody>
+   	</table>
+	</fieldset>
+<form action="ModifyGrade" method="POST">
+<fieldset>
+    <legend>Inserisci il voto</legend>
+
+    <input type="hidden" name="idStudent" th:value="${student.idStudent}">
+    <input type="hidden" name="idExamination" th:value="${idExamination}">
+
+    <label for="grade">Esito</label>
+    <select name="grade" id="grade" required>
+        <option value="">-- Seleziona voto --</option>
+
+        <!-- Esiti speciali -->
+        <option value="-1" th:selected="${student.grade == -1}" th:text="'Assente'"></option>
+        <option value="-2" th:selected="${student.grade == -2}" th:text="'Rimandato'"></option>
+        <option value="-3" th:selected="${student.grade == -3}" th:text="'Riprovato'"></option>
+
+        <!-- Voti normali -->
+        <option th:each="i : ${#numbers.sequence(18, 30)}"
+                th:value="${i}"
+                th:text="${i}"
+                th:selected="${student.grade == i}">
+        </option>
+
+        <!-- 30 e lode -->
+        <option value="31" th:selected="${student.grade == 31}" th:text="'30L'"></option>
+    </select>
+
+    <input type="submit" value="Modifica">
+</fieldset>
+</form>
+</html>

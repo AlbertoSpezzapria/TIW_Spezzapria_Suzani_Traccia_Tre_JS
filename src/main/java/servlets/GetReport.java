@@ -1,0 +1,103 @@
+package servlets;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+import DAO.ReportDAO;
+import beans.Report;
+import beans.ReportRaw;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.UnavailableException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet("/GetReport")
+public class GetReport extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection = null;
+	private TemplateEngine templateEngine;
+	private JakartaServletWebApplication webApplication;
+
+	public GetReport() {
+		super();
+	}
+
+	public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		webApplication = JakartaServletWebApplication.buildApplication(servletContext);
+	    WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setPrefix("/WEB-INF/templates/");
+		templateResolver.setSuffix(".html");
+		try {
+			ServletContext context = getServletContext();
+			String driver = context.getInitParameter("dbDriver");
+			String url = context.getInitParameter("dbUrl");
+			String user = context.getInitParameter("dbUser");
+			String password = context.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
+	}
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String id = request.getParameter("id");
+		Integer idReport = -1;
+		
+		try {
+			idReport = Integer.parseInt(id);
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
+			return;
+		}
+		
+		ReportDAO rDAO = new ReportDAO(connection); 
+		List<ReportRaw> reportRaws = null;
+		Report report = null;
+		try {
+			reportRaws = rDAO.getReportRaw(idReport); 
+			report = rDAO.getReportById(idReport);
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in report database extraction");
+			return;
+		}
+		
+		
+		WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
+
+		ctx.setVariable("report", report);
+		ctx.setVariable("reportRaw", reportRaws);
+		response.setContentType("text/html;charset=UTF-8");
+        templateEngine.process("report", ctx, response.getWriter());		
+	}
+	
+	public void destroy() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException sqle) {
+		}
+	}
+}
