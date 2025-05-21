@@ -5,6 +5,9 @@ import beans.User;
 import jakarta.servlet.ServletContext;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.apache.commons.lang.StringEscapeUtils;
+
 import java.io.IOException;
 import java.sql.Connection;
 import jakarta.servlet.ServletException;
@@ -42,8 +45,10 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String usrn = request.getParameter("username");
-		String pwd = request.getParameter("pwd");
+		String usrn;
+		String pwd;
+		usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
+		pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
 		
 		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
@@ -61,7 +66,6 @@ public class CheckLogin extends HttpServlet {
 		}
 		
 		Integer id = -1;
-		String path = getServletContext().getContextPath();
 		if (user != null) {	
 			try {
 				if(user.getRole().equals("professor")) {
@@ -81,14 +85,15 @@ public class CheckLogin extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
 				return;
 			}
-		
+			
 			request.getSession().setAttribute("user", user);
-			String target = "/GetCourses";
-			path = path + target;
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().println(usrn);
 		} else {
-			path = getServletContext().getContextPath() + "/login";
-		}
-		response.sendRedirect(path);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("Incorrect credentials");		}
 	}
 }
 	

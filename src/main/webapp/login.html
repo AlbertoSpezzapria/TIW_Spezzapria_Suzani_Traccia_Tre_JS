@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Login Page</title>
+    <script src="utils.js" charset="utf-8" defer></script>
+	<script src="loginManagement.js" charset="utf-8" defer></script>
     <link rel="stylesheet" href="/css/style.css"> 
 </head>
 <body>
     <div class="container">
         <h2>Benvenuto nell'applicazione WEB per verbalizzazione dei voti</h2>
-        <form action="CheckLogin" method="POST" class="form">
+        <form action="#" class="form">
             <fieldset>
                 <legend>Login</legend>
 
@@ -18,12 +20,10 @@
                 <label for="pwd">Password</label>
                 <input class="input" type="password" id="pwd" name="pwd" placeholder="Password" required>
 
-                <input type="submit" value="Login" class="btn-submit">
+                <button id="loginbutton" class="btn-submit">Login</button>
+                <p id="errormessage"></p>
             </fieldset>
         </form>
     </div>
-    <div th:if="${error == 'true'}" class="error-message">
-   		 <p>Credenziali errate</p>
-	</div>
 </body>
 </html>
