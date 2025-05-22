@@ -71,7 +71,171 @@
 			<p>Non ci sono appelli disponibili per il corso selezionato</p>
 		</div>
 	</div>
+	
+	<div class="container">
+	
+        <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+	
+	    <h1 th:text="${course.name} + ': ' + ${examination.date}" class="title">Nome Corso: Data</h1>
+	    <h3 class="subtitle">Studenti iscritti all'appello</h3>
+	
+	    <div id="show_enrolled">
+			<table class="table">
+			  <thead>
+			    <tr>
+			      <th>Matricola</th>
+			      <th>Cognome</th>
+			      <th>Nome</th>
+			      <th>Email</th>
+			      <th>Corso di Laurea</th>
+			      <th>Esito</th>
+			      <th>Stato Valutazione</th>
+			      <th></th>
+			    </tr>
+			  </thead>
+			  <tbody id="students-table-body">
+			  </tbody>
+			</table>
+	
+	        <div>
+                <button id="publishbutton" class="btn btn-small">Pubblica</button>
+                <button id="reportbutton" class="btn btn-small">Verbalizza</button>
+	        </div>
+	    </div>
+	
+	    <div id="no_show_enrolled" class="empty-message">
+	        Non ci sono studenti iscritti per la data d'appello selezionata
+	    </div>
+	
+	</div>
+	
+	<div class="container">
 
+        <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+	
+		<fieldset>
+	  		<legend>Studente</legend>
+	  		<table>
+	   			<thead>
+	      			<tr>
+	        			<th>Matricola</th>
+	        			<th>Cognome</th>
+	        			<th>Nome</th>
+	      			</tr>
+	    		</thead>
+	   			 <tbody>
+	      			<tr>
+	       				<td id="student-id">123456</td>
+	        			<td id="student-surname">Rossi</td>
+	        			<td id="student-name">Paolo</td>
+	      			</tr>
+	    		</tbody>
+	  		</table>
+		</fieldset>
+	
+		<form id="grade-form">
+	  		<fieldset>
+	    		<legend>Inserisci il voto</legend>
+	
+			    <input type="hidden" name="idStudent" id="idStudent">
+			    <input type="hidden" name="idExamination" id="idExamination">
+	
+			    <label for="grade">Esito</label>
+			    <select name="grade" id="grade" required>
+		        <option value="">-- Seleziona voto --</option>
+		        <option value="-1">Assente</option>
+		        <option value="-2">Rimandato</option>
+		        <option value="-3">Riprovato</option>
+		        <option value="18">18</option>
+		        <option value="19">19</option>
+		        <option value="20">20</option>
+ 		        <option value="21">21</option>
+		        <option value="22">22</option>
+		        <option value="23">23</option>
+		        <option value="24">24</option>
+		        <option value="25">25</option>
+		        <option value="26">26</option>
+ 		        <option value="27">27</option>
+		        <option value="28">28</option>
+		        <option value="29">29</option>
+      		    <option value="30">30</option>
+		        <option value="31">30L</option>
+		        </select>
+
+	      		<input type="submit" value="Modifica">
+	    	</fieldset>
+  		</form>
+	  	<p id="message" class="error-message"></p>
+	</div>
+	
+  	<div class="container">
+  	
+        <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+
+    	<div class="top-bar">
+        	<h3 class="heading-lg">Verbale</h3>
+    	</div>
+
+    	<div class="mb-4">
+      		<p><strong>Data e ora verbalizzazione:</strong> <span id="report-timestamp">01/01/2024</span></p>
+    	</div>
+
+    	<h4 class="heading-md">Esiti</h4>
+
+    	<table class="table">
+      		<thead>
+        		<tr>
+          			<th>Matricola</th>
+          			<th>Esito</th>
+        		</tr>
+      		</thead>
+      		<tbody id="report-rows">
+        	<!-- Riga di esempio -->
+        	<!-- <tr><td>123456</td><td>30 e lode</td></tr> -->
+      		</tbody>
+    	</table>
+
+   		<div class="mt-4">
+      		<button class="btn btn-small" id="allReportsBtn">Tutti i verbali</button>
+    	</div>
+
+    	<p id="message" class="error-message"></p>
+
+  	</div>
+  	
+    <div class="container">
+    
+        <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+
+     	<div class="top-bar">
+      		<h2 class="heading-lg">Lista dei Verbali</h2>
+   		</div>
+
+    	<table class="table">
+      		<thead>
+        		<tr>
+          			<th>Nome Corso</th>
+          			<th>Data Esame</th>
+          			<th>Creazione Verbale</th>
+          			<th></th>
+        		</tr>
+      		</thead>
+    		<tbody id="report-list">
+        		<!-- Popolato via JS -->
+   			</tbody>
+   		</table>
+
+   		<p id="message" class="error-message"></p>
+
+	</div>
 
 </body>
 </html>
