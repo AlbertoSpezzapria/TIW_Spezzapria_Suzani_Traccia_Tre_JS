@@ -1,5 +1,5 @@
 /**
- * Login management
+ * login management
  */
 
 (function() { // avoid variables ending up in the global scope
@@ -14,7 +14,7 @@
             switch (x.status) {
               case 200:
             	sessionStorage.setItem('username', message);
-                window.location.href = "\GetCourses";
+                window.location.href = "HomeProfessor.html";
                 break;
               case 400: // bad request
                 document.getElementById("errormessage").textContent = message;

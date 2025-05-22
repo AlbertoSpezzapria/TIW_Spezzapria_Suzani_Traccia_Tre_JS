@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Home Professor</title>
+    <script src="utils.js" charset="utf-8" defer></script>
+	<script src="Professor.js" charset="utf-8" defer></script>
+	<script src="Common.js" charset="utf-8" defer></script>
+<link rel="stylesheet" type="text/css" media="all" href="CSS/style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <span class="welcome-msg">
+                Bentornato, <span id="id_username">Luca</span>
+            </span>
+            <div align="right">
+                <button id="logoutbutton" class="btn btn-logout">Logout</button>
+			</div>
+        </div>
+
+        <h1>Area Docente</h1>
+
+        <h3>I tuoi corsi</h3>
+        <div id="show_courses">
+            <p>Seleziona un corso per visualizzare gli appelli:</p>
+				<table class="table">
+				  <thead>
+				    <tr>
+				      <th>Nome del Corso</th>
+				      <th></th>
+				    </tr>
+				  </thead>
+				  <tbody id="courses-table-body">
+				  </tbody>
+				</table>
+        </div>
+        <div id="no_show_courses">
+            <p>Attualmente non sono presenti corsi associati al tuo account.</p>
+        </div>
+
+        <div id="show_allreport_button">
+        	<button id="allreportbutton" class="btn btn-action">Visualizza Tutti i Verbali</button>
+        </div>
+    </div>
+    
+   	<div class="container">
+         <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+		<div class="top-bar">
+			<h2 id="course_name">Nome Corso</h2>
+		</div>
+
+		<h3>Appelli disponibili</h3>
+
+		<div id="show_examinations">
+ 				<p>Seleziona un'appello per maggiori dettagli:</p>
+			  <table class="table">
+			    <thead>
+			      <tr>
+			        <th>Data</th>
+			        <th></th>
+			      </tr>
+			    </thead>
+			    <tbody id="examinations-table-body"></tbody>
+			  </table>
+		</div>
+
+		<div id="no_show_examinations">
+			<p>Non ci sono appelli disponibili per il corso selezionato</p>
+		</div>
+	</div>
+
+
+</body>
+</html>
