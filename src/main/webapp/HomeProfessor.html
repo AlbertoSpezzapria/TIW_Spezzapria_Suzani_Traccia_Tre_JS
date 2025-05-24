@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Home Professor</title>
     <script src="utils.js" charset="utf-8" defer></script>
-	<script src="Professor.js" charset="utf-8" defer></script>
+	<script src="professor1.js" charset="utf-8" defer></script>
 	<script src="Common.js" charset="utf-8" defer></script>
 	<link rel="stylesheet" type="text/css" media="all" href="CSS/style.css" />
 </head>
@@ -20,7 +20,7 @@
         </div>
 
         <h1>Area Docente</h1>
-
+		<div id="home-page">
         <h3>I tuoi corsi</h3>
         <div id="show_courses">
             <p>Seleziona un corso per visualizzare gli appelli:</p>
@@ -43,7 +43,7 @@
         	<button id="allreportbutton" class="btn btn-action">Visualizza Tutti i Verbali</button>
         </div>
     </div>
-    
+    	</div>
    	<div class="container" id="exam-page">
          <div align="left">
             <button id="backbutton" class="btn btn-back">Indietro</button>
@@ -72,13 +72,13 @@
 		</div>
 	</div>
 	
-	<div class="container">
+	<div class="container" id="enrolled-students-page">
 	
         <div align="left">
             <button id="backbutton" class="btn btn-back">Indietro</button>
 		</div>
 	
-	    <h1 th:text="${course.name} + ': ' + ${examination.date}" class="title">Nome Corso: Data</h1>
+	    <h1 id="course-exam" class="title">Nome Corso: Data</h1>
 	    <h3 class="subtitle">Studenti iscritti all'appello</h3>
 	
 	    <div id="show_enrolled">
@@ -111,7 +111,7 @@
 	
 	</div>
 	
-	<div class="container">
+	<div class="container" id="form-grade-page">
 
         <div align="left">
             <button id="backbutton" class="btn btn-back">Indietro</button>
@@ -172,7 +172,7 @@
 	  	<p id="message" class="error-message"></p>
 	</div>
 	
-  	<div class="container">
+  	<div class="container" id="report-page">
   	
         <div align="left">
             <button id="backbutton" class="btn btn-back">Indietro</button>
@@ -209,7 +209,7 @@
 
   	</div>
   	
-    <div class="container">
+    <div class="container" id="allreports-page">
     
         <div align="left">
             <button id="backbutton" class="btn btn-back">Indietro</button>

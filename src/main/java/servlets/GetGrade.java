@@ -14,6 +14,7 @@ import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import DAO.CourseDAO;
 import DAO.EnrolledStudentDAO;
@@ -117,17 +118,15 @@ public class GetGrade extends HttpServlet {
 		}else {
 			enrolled = false;
 		}
-        
-        String jsonCourse = new Gson().toJson(course);
-        String jsonExamination = new Gson().toJson(examination);
-        String jsonStudent = new Gson().toJson(studentGrade);
-        String jsonEnrolled = new Gson().toJson(enrolled);
+        		
+		JsonObject responseObj = new JsonObject();
+		responseObj.add("course", new Gson().toJsonTree(course));
+		responseObj.add("examination", new Gson().toJsonTree(examination));
+		responseObj.add("student", new Gson().toJsonTree(studentGrade));
+		responseObj.add("enrolled", new Gson().toJsonTree(enrolled));
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(jsonCourse);
-		response.getWriter().write(jsonExamination);
-		response.getWriter().write(jsonStudent);
-		response.getWriter().write(jsonEnrolled);
+		response.getWriter().write(responseObj.toString());
         
 	}
 	

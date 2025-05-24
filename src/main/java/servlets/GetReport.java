@@ -14,6 +14,7 @@ import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import DAO.ReportDAO;
 import beans.Report;
@@ -77,12 +78,13 @@ public class GetReport extends HttpServlet {
 			return;
 		}
         
-        String jsonReport = new Gson().toJson(report);
-        String jsonReportRaws = new Gson().toJson(reportRaws);
+		JsonObject responseObj = new JsonObject();
+		responseObj.add("report", new Gson().toJsonTree(report));
+		responseObj.add("reportRaws", new Gson().toJsonTree(reportRaws));
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(jsonReport);
-		response.getWriter().write(jsonReportRaws);
+		response.getWriter().write(responseObj.toString());
+		
 	}
 	
 	public void destroy() {

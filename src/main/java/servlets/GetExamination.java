@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import DAO.CourseDAO;
 import DAO.ExaminationDAO;
@@ -81,12 +82,12 @@ public class GetExamination extends HttpServlet {
 			return;
 		}	
         
-        String jsonCourse = new Gson().toJson(course);
-        String jsonExaminations = new Gson().toJson(examinations);
+		JsonObject responseObj = new JsonObject();
+		responseObj.add("course", new Gson().toJsonTree(course));
+		responseObj.add("examinations", new Gson().toJsonTree(examinations));
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(jsonCourse);
-		response.getWriter().write(jsonExaminations);
+		response.getWriter().write(responseObj.toString());
 	}
 	
 	public void destroy() {

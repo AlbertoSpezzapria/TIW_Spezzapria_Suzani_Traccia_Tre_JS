@@ -13,6 +13,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import DAO.CourseDAO;
 import DAO.ExaminationDAO;
@@ -111,15 +112,14 @@ public class GetEnrolledStudent extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student database extraction");
 				return;
 			}
-	        
-	        String jsonCourse = new Gson().toJson(course);
-	        String jsonExamination = new Gson().toJson(examination);
-	        String jsonStudents = new Gson().toJson(enrolledStudents);
+			
+			JsonObject responseObj = new JsonObject();
+			responseObj.add("course", new Gson().toJsonTree(course));
+			responseObj.add("examination", new Gson().toJsonTree(examination));
+			responseObj.add("students", new Gson().toJsonTree(enrolledStudents));
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().write(jsonCourse);
-			response.getWriter().write(jsonExamination);
-			response.getWriter().write(jsonStudents);
+			response.getWriter().write(responseObj.toString());
 	        
 		}else {
 			

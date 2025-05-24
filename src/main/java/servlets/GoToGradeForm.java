@@ -12,6 +12,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import DAO.EnrolledStudentDAO;
 import DAO.ExaminationDAO;
 import beans.EnrolledStudent;
@@ -111,12 +114,13 @@ public class GoToGradeForm extends HttpServlet {
 		    	String path = getServletContext().getContextPath() + "/GetEnrolledStudent?id=" + idExamination;
 		        response.sendRedirect(path);
 			}else {
-			
-				WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
-				ctx.setVariable("idExamination", idExamination);
-				ctx.setVariable("student", enrolledStudent);
-				response.setContentType("text/html;charset=UTF-8");
-		        templateEngine.process("gradeForm", ctx, response.getWriter());
+				
+				JsonObject responseObj = new JsonObject();
+				responseObj.add("idExamination", new Gson().toJsonTree(idExamination));
+				responseObj.add("student", new Gson().toJsonTree(enrolledStudent));
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write(responseObj.toString());
 			}
 	        
 		}else {
