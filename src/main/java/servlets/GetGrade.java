@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+
+import com.google.gson.Gson;
 
 import DAO.CourseDAO;
 import DAO.EnrolledStudentDAO;
@@ -31,22 +35,12 @@ import jakarta.servlet.http.HttpSession;
 public class GetGrade extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	private JakartaServletWebApplication webApplication;
 
 	public GetGrade() {
 		super();
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		webApplication = JakartaServletWebApplication.buildApplication(servletContext);
-	    WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setPrefix("/WEB-INF/templates/");
-		templateResolver.setSuffix(".html");
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -67,13 +61,23 @@ public class GetGrade extends HttpServlet {
 		
 		HttpSession s = request.getSession(); 
 		User user = (User) s.getAttribute("user"); 
-		String id = request.getParameter("id");
+		String id = StringEscapeUtils.escapeJava(request.getParameter("id"));
 		Integer idExamination = -1;
 		
 		try {
 			idExamination = Integer.parseInt(id);
 		} catch (NumberFormatException e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
+			return;
+		}
+		
+		ExaminationDAO exDAO = new ExaminationDAO(connection, user.getId());
+		List<Integer> possibleExamination = null;
+		try {
+			possibleExamination = exDAO.getAllStudentExaminations();
+		}catch (SQLException e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in examination database extraction");
 			return;
 		}
 		
@@ -87,31 +91,44 @@ public class GetGrade extends HttpServlet {
 			return;
 		}
 		
-		CourseDAO cDAO = new CourseDAO(connection, examination.getIdCourse()); 
 		Course course = null;
+		CourseDAO cDAO = new CourseDAO(connection, examination.getIdCourse()); 
+		
 		try {
 			course = cDAO.getCourse();
 		}catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in course database extraction");
 			return;
 		}
-				
-		EnrolledStudentDAO esDAO = new EnrolledStudentDAO(connection);
-		EnrolledStudent studentGrade = null;
-		try {
-			studentGrade = esDAO.getStudentGrade(idExamination, user.getId());
-		}catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in examination database extraction");
-			return;
-		}
 		
-		WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
-		ctx.setVariable("course", course);
-		ctx.setVariable("examination", examination);
-		ctx.setVariable("student", studentGrade);
-		response.setContentType("text/html;charset=UTF-8");
-        templateEngine.process("grade", ctx, response.getWriter());		
+		EnrolledStudent studentGrade = null;
+		Boolean enrolled = true;
+		if(possibleExamination.contains(idExamination)) {
+							
+			EnrolledStudentDAO esDAO = new EnrolledStudentDAO(connection);
+			try {
+				studentGrade = esDAO.getStudentGrade(idExamination, user.getId());
+			}catch (SQLException e) {
+				e.printStackTrace();
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in examination database extraction");
+				return;
+			}
+        
+		}else {
+			enrolled = false;
+		}
+        
+        String jsonCourse = new Gson().toJson(course);
+        String jsonExamination = new Gson().toJson(examination);
+        String jsonStudent = new Gson().toJson(studentGrade);
+        String jsonEnrolled = new Gson().toJson(enrolled);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(jsonCourse);
+		response.getWriter().write(jsonExamination);
+		response.getWriter().write(jsonStudent);
+		response.getWriter().write(jsonEnrolled);
+        
 	}
 	
 	public void destroy() {

@@ -46,9 +46,24 @@ public class ExaminationDAO {
 		return exam;		
 	}
 	
-	public List<Integer> getAllExaminations() throws SQLException {
+	public List<Integer> getAllProfessorExaminations() throws SQLException {
 		List<Integer> idExaminationList = new ArrayList<>();
 		String query = "SELECT distinct(e.idExamination) FROM  course c JOIN examination e ON c.idCourse = e.idCourse WHERE c.idProfessor = ?";
+		try(PreparedStatement pstatement = dbConnection.prepareStatement(query)) {
+			pstatement.setInt(1, this.id);
+			try(ResultSet result = pstatement.executeQuery()) {
+				while(result.next()) {
+					Integer id = result.getInt("idExamination");					
+					idExaminationList.add(id);
+				}
+			}
+		}
+		return idExaminationList;		
+	}
+	
+	public List<Integer> getAllStudentExaminations() throws SQLException {
+		List<Integer> idExaminationList = new ArrayList<>();
+		String query = "SELECT distinct(idExamination) FROM  registered WHERE idStudent = ?";
 		try(PreparedStatement pstatement = dbConnection.prepareStatement(query)) {
 			pstatement.setInt(1, this.id);
 			try(ResultSet result = pstatement.executeQuery()) {

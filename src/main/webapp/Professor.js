@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+	let examPage = document.getElementById("exam-page");
 	const username = sessionStorage.getItem("username");
 	if (!username) {
 	  window.location.href = "login.html";
@@ -13,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
   
 	loadCourses();
+	examPage.style.display = "none";
+	document.getElementById("view-exams-btn").addEventListener("click", () => {
+		examPage.style.display = "block";
+		loadExaminations();
+	});
 });
 
 function loadCourses() {
@@ -41,10 +47,47 @@ function renderCourses(courses) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${course.name}</td>
-      <td><button class="btn btn-small view-exams-btn" data-id="${course.idCourse}">Visualizza Appelli</button></td>
+      <td><button id="view-exams-btn" class="btn btn-small" data-id="${course.idCourse}">Visualizza Appelli</button></td>
     `;
     tr.querySelector(".view-exams-btn").addEventListener("click", () => {
-      window.location.href = "esami.html?id=" + course.idCourse;
+      window.location.href = "/GetExamination?id=" + course.idCourse;
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function loadExaminations() {
+  makeCall("GET", "GetExamination", null, (req) => {
+    if (req.readyState === XMLHttpRequest.DONE) {
+      if (req.status === 200) {
+        const course = JSON.parse(req.responseText);
+		const examinations = JSSON.parse(req.responseText);
+		document.getElementById("course_name").textContent = course;
+		if (examinations.length === 0) {
+		  document.getElementById("show_examinations").style.display = "none";
+		  document.getElementById("no_show_examinations").style.display = "block";
+		} else {
+		  document.getElementById("no_show_examinations").style.display = "none";
+		  renderExaminations(examinations);
+		}
+      } else {
+		document.getElementById("show_courses").innerHTML = "<p>Errore nel caricamento degli appelli.</p>";
+      }
+    }
+  });
+}
+
+function renderExaminations(examinations) {
+  const tbody = document.getElementById("examinations-table-body");
+  tbody.innerHTML = ""; // pulisci
+  examinations.forEach(examination => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${examination.date}</td>
+      <td><button class="btn btn-small view-students-btn" data-id="${examination.idExamination}">Visualizza Appelli</button></td>
+    `;
+    tr.querySelector(".view-students-btn").addEventListener("click", () => {
+      window.location.href = "/GetExamination?id=" + course.idCourse;
     });
     tbody.appendChild(tr);
   });

@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.gson.Gson;
 
 import DAO.CourseDAO;
@@ -49,9 +52,7 @@ public class GetExamination extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		HttpSession s = request.getSession(); 
-		User user = (User) s.getAttribute("user");
-		String id = request.getParameter("id");
+		String id = StringEscapeUtils.escapeJava(request.getParameter("id"));
 		Integer idCourse = -1;
 		
 		try {

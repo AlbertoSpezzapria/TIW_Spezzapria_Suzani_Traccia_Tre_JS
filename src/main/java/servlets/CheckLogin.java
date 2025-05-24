@@ -45,10 +45,9 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String usrn;
-		String pwd;
-		usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
+		String usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
+		String pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
+		
 		
 		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");

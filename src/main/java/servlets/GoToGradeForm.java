@@ -88,7 +88,7 @@ public class GoToGradeForm extends HttpServlet {
 		ExaminationDAO exDAO = new ExaminationDAO(connection, user.getId());
 		List<Integer> possibleExamination = null;
 		try {
-			possibleExamination = exDAO.getAllExaminations();
+			possibleExamination = exDAO.getAllProfessorExaminations();
 		}catch (SQLException e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in examination database extraction");

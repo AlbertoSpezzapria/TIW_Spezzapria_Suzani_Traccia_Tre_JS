@@ -7,13 +7,15 @@ import java.util.List;
 
 public class Report {
     private Integer idReport;
+    private Integer idExam;
     private Timestamp timestamp;
     private String courseName;
     private Date examinationDate;
     private List<EnrolledStudent> verbalizedStudent;
     
-    public Report(Integer idReport, Timestamp tmsp, String courseName, Date examinationDate) {
+    public Report(Integer idReport, Integer idExam, Timestamp tmsp, String courseName, Date examinationDate) {
         this.idReport = idReport;
+        this.idExam = idExam;
         this.timestamp = tmsp;
         this.courseName = courseName;
         this.examinationDate = examinationDate;
@@ -26,6 +28,14 @@ public class Report {
 
     public void setIdReport(Integer idReport) {
         this.idReport = idReport;
+    }
+    
+    public int getIdExam() {
+        return idExam;
+    }
+
+    public void setIdExam(Integer idExam) {
+        this.idExam = idExam;
     }
 
     public Timestamp getTimestamp() {
@@ -59,6 +69,4 @@ public class Report {
     public List<EnrolledStudent> getStudentList() {
     	return verbalizedStudent;
     }
-    
-    
 }

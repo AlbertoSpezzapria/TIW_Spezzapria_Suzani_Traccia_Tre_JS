@@ -6,11 +6,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+
+import com.google.gson.Gson;
+
 import DAO.ReportDAO;
 import beans.Report;
 import beans.ReportRaw;
@@ -26,22 +30,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class GetReport extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	private JakartaServletWebApplication webApplication;
 
 	public GetReport() {
 		super();
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		webApplication = JakartaServletWebApplication.buildApplication(servletContext);
-	    WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setPrefix("/WEB-INF/templates/");
-		templateResolver.setSuffix(".html");
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -60,7 +54,7 @@ public class GetReport extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String id = request.getParameter("id");
+		String id = StringEscapeUtils.escapeJava(request.getParameter("id"));
 		Integer idReport = -1;
 		
 		try {
@@ -82,14 +76,13 @@ public class GetReport extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in report database extraction");
 			return;
 		}
-		
-		
-		WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
-
-		ctx.setVariable("report", report);
-		ctx.setVariable("reportRaw", reportRaws);
-		response.setContentType("text/html;charset=UTF-8");
-        templateEngine.process("report", ctx, response.getWriter());		
+        
+        String jsonReport = new Gson().toJson(report);
+        String jsonReportRaws = new Gson().toJson(reportRaws);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(jsonReport);
+		response.getWriter().write(jsonReportRaws);
 	}
 	
 	public void destroy() {

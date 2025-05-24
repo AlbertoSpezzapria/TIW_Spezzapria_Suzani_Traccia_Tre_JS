@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
@@ -33,8 +34,6 @@ import jakarta.servlet.http.HttpSession;
 public class GetEnrolledStudent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	private JakartaServletWebApplication webApplication;
 
 	public GetEnrolledStudent() {
 		super();
@@ -62,7 +61,7 @@ public class GetEnrolledStudent extends HttpServlet {
 		HttpSession s = request.getSession(); 
 		User user = (User) s.getAttribute("user"); 
 
-		String id = request.getParameter("id");
+		String id = StringEscapeUtils.escapeJava(request.getParameter("id"));
 		Integer idExamination = -1;
 		
 		try {
@@ -75,7 +74,7 @@ public class GetEnrolledStudent extends HttpServlet {
 		ExaminationDAO exDAO = new ExaminationDAO(connection, user.getId());
 		List<Integer> possibleExamination = null;
 		try {
-			possibleExamination = exDAO.getAllExaminations();
+			possibleExamination = exDAO.getAllProfessorExaminations();
 		}catch (SQLException e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in examination database extraction");
@@ -112,13 +111,6 @@ public class GetEnrolledStudent extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student database extraction");
 				return;
 			}
-			
-			WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
-			ctx.setVariable("course", course);
-			ctx.setVariable("examination", examination);
-			ctx.setVariable("students", enrolledStudents);
-			response.setContentType("text/html;charset=UTF-8");
-	        templateEngine.process("enrolled", ctx, response.getWriter());
 	        
 	        String jsonCourse = new Gson().toJson(course);
 	        String jsonExamination = new Gson().toJson(examination);

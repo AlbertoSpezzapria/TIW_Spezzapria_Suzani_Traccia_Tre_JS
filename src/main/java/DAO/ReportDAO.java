@@ -90,7 +90,7 @@ public class ReportDAO {
     }
 	
 	public List<Report> getAllReports(int idProfessor) throws SQLException {
-	    String query = "SELECT r.idReport, r.dateReport, c.name, e.date " +
+	    String query = "SELECT r.idReport, e.idExamination, r.dateReport, c.name, e.date " +
 	                   "FROM report r JOIN examination e ON r.idExamination = e.idExamination " +
 	                   "JOIN course c ON e.idCourse = c.idCourse " +
 	                   "WHERE c.idProfessor = ? " +
@@ -102,7 +102,7 @@ public class ReportDAO {
 	        ps.setInt(1, idProfessor);
 	        try (ResultSet rs = ps.executeQuery()) {
 	            while (rs.next()) {
-	                Report report = new Report(rs.getInt("idReport"), rs.getTimestamp("dateReport"), rs.getString("name"), rs.getDate("date"));
+	                Report report = new Report(rs.getInt("idReport"), rs.getInt("idExamination"), rs.getTimestamp("dateReport"), rs.getString("name"), rs.getDate("date"));
 	                reportList.add(report);
 	            }
 	        }
@@ -111,7 +111,7 @@ public class ReportDAO {
 	}
 	
 	public List<ReportRaw> getReportRaw(int idReport) throws SQLException {
-	    String query = "SELECT rr.idReport, s.idStudent, rr.grade " +
+	    String query = "SELECT rr.idReport, rr.idStudent, s.surname, s.name, rr.grade " +
 	                   "FROM reportlline rr JOIN student s ON rr.idStudent = s.idStudent " +
 	                   "WHERE rr.idReport = ?";
 
@@ -121,7 +121,7 @@ public class ReportDAO {
 	        ps.setInt(1, idReport);
 	        try (ResultSet rs = ps.executeQuery()) {
 	            while (rs.next()) {
-	                ReportRaw raw = new ReportRaw(rs.getInt("idReport"), rs.getInt("idStudent"), rs.getInt("grade"));
+	                ReportRaw raw = new ReportRaw(rs.getInt("idReport"), rs.getInt("idStudent"), rs.getString("surname"), rs.getString("name"), rs.getInt("grade"));
 	                reportRaws.add(raw);
 	            }
 	        }
@@ -130,7 +130,7 @@ public class ReportDAO {
 	}
 	
 	public Report getReportById(int idReport) throws SQLException {
-		String query = "SELECT rr.idReport, rr.dateReport, cc.name, ee.date " +
+		String query = "SELECT rr.idReport, ee.idExamination, rr.dateReport, cc.name, ee.date " +
 	               "FROM report rr " +
 	               "JOIN examination ee ON rr.idExamination = ee.idExamination " +
 	               "JOIN course cc ON ee.idCourse = cc.idCourse " +
@@ -142,7 +142,7 @@ public class ReportDAO {
 			pstatement.setInt(1, idReport);
 			try(ResultSet result = pstatement.executeQuery()) {
 				while(result.next()) {
-					report = new Report(result.getInt("idReport"),result.getTimestamp("dateReport"),result.getString("name"),result.getDate("dateReport"));					
+					report = new Report(result.getInt("idReport"),result.getInt("idExamination"),result.getTimestamp("dateReport"),result.getString("name"),result.getDate("date"));					
 				}
 			}
 		}
