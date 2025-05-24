@@ -33,12 +33,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 public class GetCourses extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	private JakartaServletWebApplication webApplication;
 
 	public GetCourses() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void init() throws ServletException {

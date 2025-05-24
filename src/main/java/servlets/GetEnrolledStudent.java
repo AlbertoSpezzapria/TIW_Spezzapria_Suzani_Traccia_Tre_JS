@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+
+import com.google.gson.Gson;
 
 import DAO.CourseDAO;
 import DAO.ExaminationDAO;
@@ -41,14 +41,6 @@ public class GetEnrolledStudent extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		webApplication = JakartaServletWebApplication.buildApplication(servletContext);
-	    WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setPrefix("/WEB-INF/templates/");
-		templateResolver.setSuffix(".html");
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -127,6 +119,15 @@ public class GetEnrolledStudent extends HttpServlet {
 			ctx.setVariable("students", enrolledStudents);
 			response.setContentType("text/html;charset=UTF-8");
 	        templateEngine.process("enrolled", ctx, response.getWriter());
+	        
+	        String jsonCourse = new Gson().toJson(course);
+	        String jsonExamination = new Gson().toJson(examination);
+	        String jsonStudents = new Gson().toJson(enrolledStudents);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(jsonCourse);
+			response.getWriter().write(jsonExamination);
+			response.getWriter().write(jsonStudents);
 	        
 		}else {
 			

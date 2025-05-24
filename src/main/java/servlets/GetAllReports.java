@@ -6,11 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
-import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+import com.google.gson.Gson;
+
 import DAO.ReportDAO;
 import beans.Report;
 import beans.User;
@@ -27,22 +24,12 @@ import jakarta.servlet.http.HttpSession;
 public class GetAllReports extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	private JakartaServletWebApplication webApplication;
 
 	public GetAllReports() {
 		super();
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		webApplication = JakartaServletWebApplication.buildApplication(servletContext);
-	    WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setPrefix("/WEB-INF/templates/");
-		templateResolver.setSuffix(".html");
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -74,10 +61,10 @@ public class GetAllReports extends HttpServlet {
 			return;
 		}
 		
-		WebContext ctx = new WebContext(webApplication.buildExchange(request, response), request.getLocale());
-		ctx.setVariable("reports", reports);
-		response.setContentType("text/html;charset=UTF-8");
-        templateEngine.process("allReport", ctx, response.getWriter());		
+		String json = new Gson().toJson(reports);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);	
 	}
 	
 	public void destroy() {
