@@ -1,14 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 	
-	let homePage = document.getElementById("home-page")
-	let examPage = document.getElementById("exam-page");
-	let enrolledStudentsPage = document.getElementById("enrolled-students-page");
-	let formGradePage = document.getElementById("form-grade-page");
-	let reportPage = document.getElementById("report-page");
-	let allReportsPage = document.getElementById("allreports-page");
-	const currentSection = sessionStorage.getItem("currentSection");
-	const id = sessionStorage.getItem("selectedId");
-	
 	//Username 
 	const username = sessionStorage.getItem("username");
 	if (!username) {
@@ -22,6 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	  sessionStorage.clear();
 	  window.location.href = "login.html";
 	});
+	
+	let homePage = document.getElementById("home-page")
+	let examPage = document.getElementById("exam-page");
+	let enrolledStudentsPage = document.getElementById("enrolled-students-page");
+	let formGradePage = document.getElementById("form-grade-page");
+	let reportPage = document.getElementById("report-page");
+	let allReportsPage = document.getElementById("allreports-page");
+	const currentSection = sessionStorage.getItem("currentSection");
+	const id = sessionStorage.getItem("selectedId");
 	
   	//Start page
 	homePage.style.display = "none";
@@ -53,17 +53,38 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	
 	//back buttons
-	/*document.getElementById("backbutton").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "home-section");
+	document.getElementById("backbutton-exam").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "home-page");
 	  //homePage.style.display = "block";
 	  window.location.reload(); // o cambia direttamente visibilità
-	});*/
-	
-	document.getElementById("allreport-button").addEventListener("click", () =>{
+	});
+	document.getElementById("backbutton-enrolled-students").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "exam-page");//da sistemare 
+	  window.location.reload();
+  	});
+	document.getElementById("backbutton-grade-form").addEventListener("click", () => {
+	  //sessionStorage.setItem("currentSection", "enrolled-students-page");
+	  window.location.reload();
+	});
+	document.getElementById("backbutton-report").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "enrolled-students-page");//da sistemare 
+	  window.location.reload();
+  	});
+	document.getElementById("backbutton-allreports").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "home-page");
+	  window.location.reload();
+  	});
+		
+	document.getElementById("allreport-button-home").addEventListener("click", () =>{
 		homePage.style.display = "none";
 		allReportsPage.style.display = "block";
 		loadAllReports();
-	})
+	});
+	document.getElementById("allreport-button-report").addEventListener("click", () =>{
+		reportPage.style.display = "none";
+		allReportsPage.style.display = "block";
+		loadAllReports();
+	});
 });
 
 function loadCourses() {
@@ -188,7 +209,13 @@ function renderStudents(students) {
       <td><button class="btn btn-small view-students-btn" data-id="${student.idStudent}">Modifica</button></td>
     `;
     tr.querySelector(".view-students-btn").addEventListener("click", () => {
-		
+		const studentId = event.target.dataset.id;
+		const examinationId = sessionStorage.getItem("selectedId");
+		//sessionStorage.setItem("selectedId", studentId);
+		//sessionStorage.setItem("currentSection", "enrolled-students-page");
+		document.getElementById("form-grade-page").style.display = "block";
+		document.getElementById("enrolled-students-page").style.display = "none";
+		loadGradeForm(examinationId, studentId);
     });
     tbody.appendChild(tr);
   });
@@ -274,5 +301,22 @@ function renderReport(reportRaws) {
 	  <td>${student.grade}</td>
     `;
     tbody.appendChild(tr);
+  });
+}
+
+function loadGradeForm(idE,idS) {
+  makeCall("GET", "GoToGradeForm?idExamination=" + idE + "&idStudent=" + idS, null, (req) => {
+    if (req.readyState === XMLHttpRequest.DONE) {
+      if (req.status === 200) {
+        const data = JSON.parse(req.responseText);
+		const idExamination = data.idExamination;
+		const student = data.student;
+		document.getElementById("student-id").textContent = student.idStudent;
+		document.getElementById("student-surname").textContent = student.surname;
+		document.getElementById("student-name").textContent = student.name;
+      } else {
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
+      }
+    }
   });
 }
