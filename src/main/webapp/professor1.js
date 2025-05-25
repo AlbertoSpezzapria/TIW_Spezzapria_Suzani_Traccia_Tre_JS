@@ -37,6 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			case "exam-page": 
 				loadExaminations(id);
 				break;
+			case "enrolled-students-page":
+				loadEnrolledStudents(id);
+			case "allreports-page":
+				loadAllReports();
+			case "report-page": 
+				loadReport(id);
 			default:
 				loadCourses();
 				break;
@@ -52,6 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	  //homePage.style.display = "block";
 	  window.location.reload(); // o cambia direttamente visibilità
 	});*/
+	
+	document.getElementById("allreport-button").addEventListener("click", () =>{
+		homePage.style.display = "none";
+		allReportsPage.style.display = "block";
+		loadAllReports();
+	})
 });
 
 function loadCourses() {
@@ -67,7 +79,7 @@ function loadCourses() {
 		  renderCourses(courses);
 		}
       } else {
-		document.getElementById("show_courses").innerHTML = "<p>Errore nel caricamento dei corsi</p>";
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento dei corsi</p>";
       }
     }
   });
@@ -110,7 +122,7 @@ function loadExaminations(id) {
 		  renderExaminations(examinations);
 		}
       } else {
-		document.getElementById("show_courses").innerHTML = "<p>Errore nel caricamento degli appelli</p>";
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli appelli</p>";
       }
     }
   });
@@ -154,7 +166,7 @@ function loadEnrolledStudents(id) {
 		  renderStudents(students);
 		}
       } else {
-		document.getElementById("show_courses").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
       }
     }
   });
@@ -178,6 +190,89 @@ function renderStudents(students) {
     tr.querySelector(".view-students-btn").addEventListener("click", () => {
 		
     });
+    tbody.appendChild(tr);
+  });
+}
+
+function loadAllReports() {
+  makeCall("GET", "GetAllReports", null, (req) => {
+    if (req.readyState === XMLHttpRequest.DONE) {
+      if (req.status === 200) {
+        const reports = JSON.parse(req.responseText);
+		if (reports.length === 0) {
+		  document.getElementById("show_reports").style.display = "none";
+		  document.getElementById("no_show_reports").style.display = "block";
+		} else {
+		  document.getElementById("no_show_reports").style.display = "none";
+		  renderAllReports(reports);
+		}
+      } else {
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
+      }
+    }
+  });
+}
+
+function renderAllReports(reports) {
+  const tbody = document.getElementById("reports-table-body");
+  tbody.innerHTML = "";
+  reports.forEach(report => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${report.courseName}</td>
+	  <td>${report.examinationDate}</td>
+	  <td>${report.timestamp}</td>
+      <td><button class="btn btn-small view-report-btn" data-id="${report.idReport}">Vai al verbale</button></td>
+    `;
+    tr.querySelector(".view-report-btn").addEventListener("click", () => {
+		const reportId = event.target.dataset.id;
+		sessionStorage.setItem("selectedId", reportId);
+		sessionStorage.setItem("currentSection", "report-page");
+		document.getElementById("report-page").style.display = "block";
+		document.getElementById("allreports-page").style.display = "none";
+		loadReport(reportId);
+		
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function loadReport(id) {
+  makeCall("GET", "GetReport?id=" + id, null, (req) => {
+    if (req.readyState === XMLHttpRequest.DONE) {
+      if (req.status === 200) {
+        const data = JSON.parse(req.responseText);
+		const report = data.report;
+		const reportRaws = data.reportRaws;
+		document.getElementById("report-courseName").textContent = report.courseName;
+		document.getElementById("report-examinationDate").textContent = report.examinationDate;
+		document.getElementById("report-timestamp").textContent = report.timestamp;
+		/*if (reports.length === 0) {
+		  document.getElementById("show_reports").style.display = "none";
+		  document.getElementById("no_show_reports").style.display = "block";
+		} else {
+		  document.getElementById("no_show_reports").style.display = "none";
+		  renderAllReports(reports);
+		}*/
+		renderReport(reportRaws);
+      } else {
+		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
+      }
+    }
+  });
+}
+
+function renderReport(reportRaws) {
+  const tbody = document.getElementById("report-table-body");
+  tbody.innerHTML = "";
+  reportRaws.forEach(student => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${student.idStudent}</td>
+	  <td>${student.name}</td>
+	  <td>${student.surname}</td>
+	  <td>${student.grade}</td>
+    `;
     tbody.appendChild(tr);
   });
 }

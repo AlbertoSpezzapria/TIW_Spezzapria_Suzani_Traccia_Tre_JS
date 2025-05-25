@@ -40,7 +40,7 @@
         </div>
 
         <div>
-        	<button id="allreportbutton" class="btn btn-action">Visualizza Tutti i Verbali</button>
+        	<button id="allreport-button" class="btn btn-action">Visualizza Tutti i Verbali</button>
         </div>
     </div>
     	</div>
@@ -183,6 +183,8 @@
     	</div>
 
     	<div class="mb-4">
+    		<p><strong>Corso:</strong> <span id="report-courseName">TIW</span></p>
+        	<p><strong>Appello:</strong> <span id="report-examinationDate">01/06/2024</span></p>
       		<p><strong>Data e ora verbalizzazione:</strong> <span id="report-timestamp">01/01/2024</span></p>
     	</div>
 
@@ -192,17 +194,19 @@
       		<thead>
         		<tr>
           			<th>Matricola</th>
-          			<th>Esito</th>
+                    <th>Cognome</th>
+                    <th>Nome</th>
+                    <th>Esito</th>
         		</tr>
       		</thead>
-      		<tbody id="report-rows">
+      		<tbody id="report-table-body">
         	<!-- Riga di esempio -->
         	<!-- <tr><td>123456</td><td>30 e lode</td></tr> -->
       		</tbody>
     	</table>
 
    		<div class="mt-4">
-      		<button class="btn btn-small" id="allReportsBtn">Tutti i verbali</button>
+      		<button class="btn btn-small" id="allReports-button">Tutti i verbali</button>
     	</div>
 
     	<p id="message" class="error-message"></p>
@@ -218,7 +222,7 @@
      	<div class="top-bar">
       		<h2 class="heading-lg">Lista dei Verbali</h2>
    		</div>
-
+		<div id="show_reports">
     	<table class="table">
       		<thead>
         		<tr>
@@ -228,12 +232,15 @@
           			<th></th>
         		</tr>
       		</thead>
-    		<tbody id="report-list">
+    		<tbody id="reports-table-body">
         		<!-- Popolato via JS -->
    			</tbody>
    		</table>
-
-   		<p id="message" class="error-message"></p>
+		</div>
+		<div id="no_show_reports">
+			<p>Non hai ancora fatto alcun verbale</p>
+		</div>
+   		<div id="error-message" class="error-message"></div>
 
 	</div>
 
