@@ -20,9 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	let formGradePage = document.getElementById("form-grade-page");
 	let reportPage = document.getElementById("report-page");
 	let allReportsPage = document.getElementById("allreports-page");
+	let multiInsertPage = document.getElementById("multi-insert-page");
 	const currentSection = sessionStorage.getItem("currentSection");
 	const id = sessionStorage.getItem("selectedId");
-	
+		
   	//Start page
 	homePage.style.display = "none";
 	examPage.style.display = "none";
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	formGradePage.style.display = "none";
 	reportPage.style.display = "none";
 	allReportsPage.style.display = "none";
+	multiInsertPage.style.display = "none";
 	
 	if(currentSection){
 		document.getElementById(currentSection).style.display = "block";
@@ -85,7 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
 		allReportsPage.style.display = "block";
 		loadAllReports();
 	});
+	document.getElementById("multiinsertbutton").addEventListener("click", () =>{
+		multiInsertPage.style.display = "block";
+		renderMultiInsert();
+	});
+	document.getElementById("send-multiple-grade-button").addEventListener("click", () =>{
+		multiInsertPage.style.display = "none";
+		updateMultiGrade();
+	});
 });
+
+let enrolledStudents = [];
 
 function loadCourses() {
   makeCall("GET", "GetCourses", null, (req) => {
@@ -178,6 +190,7 @@ function loadEnrolledStudents(id) {
 		const course = data.course;
 		const examination = data.examination;
 		const students = data.students;
+		enrolledStudents = data.students;
 		document.getElementById("course-exam").textContent = course.name + " : " + examination.date;
 		if (students.length === 0) {
 		  document.getElementById("show_enrolled").style.display = "none";
@@ -319,4 +332,123 @@ function loadGradeForm(idE,idS) {
       }
     }
   });
+}
+
+function renderMultiInsert() {
+	const tbody = document.getElementById("multi-insert-table-body");
+	const notInsertGrade = enrolledStudents.filter(s => s.evaluationState === "non-inserito");
+	tbody.innerHTML = "";
+	notInsertGrade.forEach(student => {
+		const tr = document.createElement("tr");
+		tr.innerHTML = `
+		  <td>${student.idStudent}</td>
+		  <td>${student.surname}</td>
+		  <td>${student.name}</td>
+		  <td>${student.email}</td>
+		  <td>${student.degree}</td>
+		  <td>
+		    <input type="hidden" name="idStudent" value="${student.idStudent}" data-idexamination="${student.idExamination}">
+		    <select name="grade" required data-idstudent="${student.idStudent}" data-idexamination="${student.idExamination}">
+		      <option value="">-- Seleziona voto --</option>
+		      <option value="-1">Assente</option>
+		      <option value="-2">Rimandato</option>
+		      <option value="-3">Riprovato</option>
+		      ${[...Array(13)].map((_, i) => `<option value="${18 + i}">${18 + i}</option>`).join("")}
+		      <option value="31">30L</option>
+		    </select>
+		  </td>
+		`;
+		tbody.appendChild(tr);
+	});
+}
+
+/*
+function updateMultiGrade() {
+	const selects = document.querySelectorAll(".grade-select");
+	let insert = 0;
+	let total = 0;
+		
+	selects.forEach(select => {
+		  const idStudent = select.dataset.idstudent;
+		  const idExamination = select.dataset.idexamination;
+		  const grade = select.value;
+		
+		  if (grade !== "") {
+			total++;
+			const form = document.createElement("form");
+			const fields = [
+				{ name: "idStudent", value: idStudent },
+				{ name: "idExamination", value: idExamination },
+				{ name: "grade", value: grade }
+			];
+			  
+			  fields.forEach(f => {
+			    const input = document.createElement("input");
+			    input.type = "hidden";
+			    input.name = f.name;
+			    input.value = f.value;
+			    form.appendChild(input);
+			  });
+
+			makeCall("POST", "ModifyGrade", form, (req) => {
+				if (req.readyState === XMLHttpRequest.DONE) {
+			    	if (req.status === 200) {
+						insert++;
+			    	} else {
+			      		alert("Errore nell'inserimento dei voti.");
+			    	}
+					if(insert === total) {
+						alert("Voti inseriti con successo!");
+						loadEnrolledStudents(idExamination); 
+					}
+				}		
+			}, true); 
+		  }
+	});
+	
+	if (total === 0) {
+	  alert("Inserisci almeno un voto.");
+	}  	
+}
+*/
+
+function updateMultiGrade() {
+	  const selects = document.querySelectorAll("select[name='grade']");
+	  const multiGrade = [];
+
+	  selects.forEach(select => {
+	    const grade = select.value;
+	    if (grade !== "") {
+	      const idStudent = select.dataset.idstudent;
+	      const idExamination = select.dataset.idexamination;
+
+	      multiGrade.push({
+	        idStudent,
+	        idExamination,
+	        grade
+	      });
+	    }
+
+	  if (multiGrade.length === 0) {
+	    alert("Inserisci almeno un voto.");
+	    return;
+	  }
+
+	  let completed = 0;
+	  multiGrade.forEach(item => {
+	    const params = new URLSearchParams(item).toString();
+	    makeCall("POST", "ModifyGrade", params, (req) => {
+	      if (req.readyState === XMLHttpRequest.DONE) {
+	        completed++;
+	        if (req.status !== 200) {
+	          console.error(`Errore inserimento voto per studente ${item.idStudent}`);
+	        }
+	        if (completed === multiGrade.length) {
+	          alert("Voti inseriti con successo!");
+	          loadEnrolledStudents(item.idExamination);
+	        }
+	      }
+	    }, false);
+	  });
+	});
 }

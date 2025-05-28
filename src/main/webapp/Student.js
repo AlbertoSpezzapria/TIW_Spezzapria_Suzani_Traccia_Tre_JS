@@ -40,6 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
 		homePage.style.display = "block";
 		loadCourses();
 	}
+	
+	//back buttons
+	document.getElementById("backbutton-exam").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "home-page");
+	  //homePage.style.display = "block";
+	  window.location.reload(); // o cambia direttamente visibilità
+	});
+	document.getElementById("backbutton-grade").addEventListener("click", () => {
+	  sessionStorage.setItem("currentSection", "exam-page");//da sistemare 
+	  window.location.reload();
+	});
+	
+
 });
 
 function loadCourses() {
@@ -113,11 +126,12 @@ function renderExaminations(examinations) {
       <td>${examination.date}</td>
       <td><button class="btn btn-small view-students-btn" data-id="${examination.idExam}">Visualizza Dettagli</button></td>
     `;
-    tr.querySelector(".view-students-btn").addEventListener("click", () => {
-		const examinationId = event.target.dataset.id;
+    tr.querySelector(".view-students-btn").addEventListener("click", (e) => {
+		const examinationId = e.target.dataset.id;
 		sessionStorage.setItem("selectedId", examinationId);
 		sessionStorage.setItem("currentSection", "enrolled-students-page");
 		document.getElementById("exam-page").style.display = "none";
+		document.getElementById("grade-page").style.display = "block";
 		loadGrade(examination.idExam);		
     });
     tbody.appendChild(tr);

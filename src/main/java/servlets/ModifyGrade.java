@@ -87,9 +87,9 @@ public class ModifyGrade extends HttpServlet {
 			return;
 		}
 		
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GetEnrolledStudent?id=" + id1;
-		response.sendRedirect(path);
+		//String ctxpath = getServletContext().getContextPath();
+		//String path = ctxpath + "/GetEnrolledStudent?id=" + id1;
+		//response.sendRedirect(path);
 	}
 	
 	public void destroy() {
