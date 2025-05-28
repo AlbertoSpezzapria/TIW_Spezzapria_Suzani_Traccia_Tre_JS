@@ -6,11 +6,131 @@
     <script src="utils.js" charset="utf-8" defer></script>
 	<script src="Student.js" charset="utf-8" defer></script>
 	<script src="Common.js" charset="utf-8" defer></script>
+	<script src="loginManagement.js" charset="utf-8" defer></script>
 	<link rel="stylesheet" type="text/css" media="all" href="CSS/style.css" />
 </head>
 
 <body>
+	<div class="container">
+        <div class="top-bar">
+            <span class="welcome-msg">
+                Bentornato, <span id="id_username">Luca</span>
+            </span>
+            <div align="right">
+                <button id="logoutbutton" class="btn btn-logout">Logout</button>
+			</div>
+        </div>
 
+        <h1>Area Studente</h1>
+        <div id="home-page">
+	        <h3>I tuoi corsi</h3>
+	        
+	        <div id="show_courses">
+	            <p>Seleziona un corso per visualizzare gli appelli:</p>
+					<table class="table">
+					  <thead>
+					    <tr>
+					      <th>Nome del Corso</th>
+					      <th></th>
+					    </tr>
+					  </thead>
+					  <tbody id="courses-table-body">
+					  </tbody>
+					</table>
+	        </div>
+	        <div id="no_show_courses">
+	            <p>Attualmente non sono presenti corsi associati al tuo account.</p>
+	        </div>
+		</div>
+	</div>
+	
+	<div class="container" id="exam-page">
+        <div align="left">
+            <button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+		<div class="top-bar">
+			<h2 id="course_name">Nome Corso</h2>
+		</div>
+
+		<h3>Appelli disponibili</h3>
+
+		<div id="show_examinations">
+ 				<p>Seleziona un'appello per maggiori dettagli:</p>
+			  <table class="table">
+			    <thead>
+			      <tr>
+			        <th>Data</th>
+			        <th></th>
+			      </tr>
+			    </thead>
+			    <tbody id="examinations-table-body"></tbody>
+			  </table>
+		</div>
+
+		<div id="no_show_examinations">
+			<p>Non ci sono appelli disponibili per il corso selezionato</p>
+		</div>
+	</div>
+	
+	<div class="container" id="grade-page">
+	    <div align="left">
+	    	<button id="backbutton" class="btn btn-back">Indietro</button>
+		</div>
+		<div class="top-bar">
+			<h2 id="course_name">Nome Corso</h2>
+		</div>
+		
+		<h3>Valutazione</h3>
+	
+		<div id="show-grade" style="display: block;"> 
+	
+		  	<p>Studente</p>
+		  	<table class="table" id="grade-table">
+		    	<thead>
+		      		<tr>
+		        		<th>Matricola</th>
+		        		<th>Cognome</th>
+		        		<th>Nome</th>
+		      		</tr>
+		    	</thead>
+		    	<tbody>
+		      		<tr>
+		       			<td id="student-id">123456</td>
+		        		<td id="student-surname">Rossi</td>
+		        		<td id="student-name">Paolo</td>
+		      		</tr>
+		  		</tbody>
+		  	</table>
+		
+		  	<div class="field-grade">
+		    	<h3>Esito</h3>
+		    	<div id="grade-valid" style="display: block;">
+		      		<p id="grade-value">30 e lode</p>
+		   		</div>
+		
+		    	<div id="grade-failed" style="display: none;">
+		      		<p>Rimandato</p>
+		    	</div>
+		
+		    	<div id="grade-rejected" style="display: none;">
+		      		<p>Il voto è stato rifiutato</p>
+		    	</div>
+		
+		    	<div id="grade-reject-button" style="display: block;">
+		      		<a href="RejectGrade?id=1"><button class="btn btn-small">Rifiuta</button></a>
+		    	</div>
+		  	</div>
+		</div>
+	
+		<div id="no-show-grade" style="display: none;"> <!-- Mostra se student == null -->
+	  		<div id="not-enrolled" style="display: none;">
+	    		<p>Non sei iscritto a questo appello</p>
+	  		</div>
+	  		<div id="enrolled-waiting" style="display: none;">
+	    		<p>Voto non ancora definito</p>
+	  		</div>
+		</div>
+	</div>
 
 </body>
 </html>

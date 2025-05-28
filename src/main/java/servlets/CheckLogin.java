@@ -89,7 +89,8 @@ public class CheckLogin extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().println(usrn);
+			String json = String.format("{\"username\": \"%s\", \"role\": \"%s\"}", user.getUsername(), user.getRole());
+			response.getWriter().println(json);
 		} else {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Incorrect credentials");		}
