@@ -25,34 +25,43 @@ document.addEventListener("DOMContentLoaded", () => {
 	gradePage.style.display = "none";
 	
 	if(currentSection) {
-		document.getElementById(currentSection).style.display = "block";
-		switch(currentSection) {
-			case "exam-page":
-				loadExaminations(id);
-				break;
-			case "gradeapge":
-				loadGrade(id);
-			default:
-				loadCourses(id);
-				break;
+		console.log("Current section: ", currentSection);
+		const sectionElement = document.getElementById(currentSection);
+		if(sectionElement) {
+			sectionElement.style.display = "block";
+			switch(currentSection) {
+				case "exam-page":
+					loadExaminations(id);
+					break;
+				case "grade-page":
+					loadGrade(id);
+					break;
+				default:
+					loadCourses();
+					break;
+			}
+		} else {
+			console.error("Elemento non trovato per id:", currentSection);
+			homePage.style.display = "block";
+			loadCourses();
 		}
 	}else{
+		console.log("Nessuna currentSection, carico Home");
 		homePage.style.display = "block";
 		loadCourses();
 	}
 	
 	//back buttons
 	document.getElementById("backbutton-exam").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "home-page");
-	  //homePage.style.display = "block";
-	  window.location.reload(); // o cambia direttamente visibilità
+		document.getElementById("exam-page").style.display = "none";
+		document.getElementById("home-page").style.display = "block";
+	  	//window.location.reload(); // o cambia direttamente visibilità
 	});
 	document.getElementById("backbutton-grade").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "exam-page");//da sistemare 
-	  window.location.reload();
+		document.getElementById("grade-page").style.display = "none";
+		document.getElementById("exam-page").style.display = "block";	  
+		//window.location.reload();
 	});
-	
-
 });
 
 function loadCourses() {
@@ -129,7 +138,7 @@ function renderExaminations(examinations) {
     tr.querySelector(".view-students-btn").addEventListener("click", (e) => {
 		const examinationId = e.target.dataset.id;
 		sessionStorage.setItem("selectedId", examinationId);
-		sessionStorage.setItem("currentSection", "enrolled-students-page");
+		sessionStorage.setItem("currentSection", "exam-page");
 		document.getElementById("exam-page").style.display = "none";
 		document.getElementById("grade-page").style.display = "block";
 		loadGrade(examination.idExam);		
@@ -175,32 +184,41 @@ function loadGrade(id) {
 }
 
 function renderGrade(grade, idExam) {
-	document.getElementById("student-id").textContent = grade.studentId;
+	sessionStorage.setItem("currentSection", "grade-page");
+
+	document.getElementById("student-id").textContent = grade.idStudent;
 	document.getElementById("student-surname").textContent = grade.surname;
 	document.getElementById("student-name").textContent = grade.name;
 
-	// Pulisce tutti i blocchi
 	document.getElementById("grade-valid").style.display = "none";
 	document.getElementById("grade-failed").style.display = "none";
 	document.getElementById("grade-rejected").style.display = "none";
-	document.getElementById("grade-reject-button").style.display = "none";
+	document.getElementById("reject-grade-button").style.display = "none";
+
 
 	if (grade.evaluationState === "rifiutato") {
 	  document.getElementById("grade-rejected").style.display = "block";
 	} else if (grade.grade < 18) {
 	  document.getElementById("grade-failed").style.display = "block";
 	} else {
-	  // Caso valido: ≥18 e non rifiutato
 	  const gradeValue = grade.grade === 31 ? "30 e lode" : grade.grade;
+	  const rejectButton = document.getElementById("reject-grade-button");
+
 	  document.getElementById("grade-value").textContent = gradeValue;
 	  document.getElementById("grade-valid").style.display = "block";
+	  document.getElementById("reject-grade-button").style.display = "block";
 
-	  // Mostra bottone "Rifiuta" se non verbalizzato né rifiutato
-	  if (grade.evaluationState !== "verbalizzato") {
-	    const rejectLink = document.querySelector("#grade-reject-button a");
-	    rejectLink.href = `RejectGrade?id=${idExam}`;
-	    document.getElementById("grade-reject-button").style.display = "block";
-	  }
+	  rejectButton.onclick = () => {
+		const url = "RejectGrade?id="+encodeURIComponent(idExam);
+		makeCall("GET", url, null, (req) => {
+			if(req.readyState === XMLHttpRequest.DONE) {
+				if(req.status === 200) {
+					loadGrade(idExam);
+				} else {
+					alert("Errore nel rifiuto del voto");
+				}
+			}
+		});
+	  };
 	}
 }
-

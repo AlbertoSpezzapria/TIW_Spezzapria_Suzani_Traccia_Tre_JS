@@ -86,9 +86,9 @@ public class RejectGrade extends HttpServlet {
 			return;
 		}
 		
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GetGrade?id=" + idExamination;
-		response.sendRedirect(path);
+		//String ctxpath = getServletContext().getContextPath();
+		//String path = ctxpath + "/GetGrade?id=" + idExamination;
+		//response.sendRedirect(path);
 	}
 	
 	public void destroy() {
