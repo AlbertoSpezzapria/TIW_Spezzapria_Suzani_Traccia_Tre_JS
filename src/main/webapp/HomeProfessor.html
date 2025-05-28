@@ -35,19 +35,18 @@
 				  <tbody id="courses-table-body">
 				  </tbody>
 				</table>
-	        </div>
+        	</div>
 	        <div id="no_show_courses">
 	            <p>Attualmente non sono presenti corsi associati al tuo account.</p>
 	        </div>
-	
 	        <div>
-	        	<button id="allreport-button" class="btn btn-action">Visualizza Tutti i Verbali</button>
+	        	<button id="allreport-button-home" class="btn btn-action">Visualizza Tutti i Verbali</button>
 	        </div>
     	</div>
-	</div>
+    </div>
    	<div class="container" id="exam-page">
          <div align="left">
-            <button id="backbutton" class="btn btn-back">Indietro</button>
+            <button id="backbutton-exam" class="btn btn-back">Indietro</button>
 		</div>
 		<div class="top-bar">
 			<h2 id="course_name">Nome Corso</h2>
@@ -76,7 +75,7 @@
 	<div class="container" id="enrolled-students-page">
 	
         <div align="left">
-            <button id="backbutton" class="btn btn-back">Indietro</button>
+            <button id="backbutton-enrolled-students" class="btn btn-back">Indietro</button>
 		</div>
 	
 	    <h1 id="course-exam" class="title">Nome Corso: Data</h1>
@@ -115,32 +114,30 @@
 	<div class="container" id="form-grade-page">
 
         <div align="left">
-            <button id="backbutton" class="btn btn-back">Indietro</button>
+            <button id="backbutton-grade-form" class="btn btn-back">Indietro</button>
 		</div>
 	
-		<fieldset>
-	  		<legend>Studente</legend>
-	  		<table>
-	   			<thead>
-	      			<tr>
-	        			<th>Matricola</th>
-	        			<th>Cognome</th>
-	        			<th>Nome</th>
-	      			</tr>
-	    		</thead>
-	   			 <tbody>
-	      			<tr>
-	       				<td id="student-id">123456</td>
-	        			<td id="student-surname">Rossi</td>
-	        			<td id="student-name">Paolo</td>
-	      			</tr>
-	    		</tbody>
-	  		</table>
-		</fieldset>
+		<h3>Studente</h3>
+  		<table>
+   			<thead>
+      			<tr>
+        			<th>Matricola</th>
+        			<th>Cognome</th>
+        			<th>Nome</th>
+      			</tr>
+    		</thead>
+   			 <tbody>
+      			<tr>
+       				<td id="student-id">123456</td>
+        			<td id="student-surname">Rossi</td>
+        			<td id="student-name">Paolo</td>
+      			</tr>
+    		</tbody>
+  		</table>
 	
-		<form id="grade-form">
-	  		<fieldset>
-	    		<legend>Inserisci il voto</legend>
+	<form id="grade-form">
+		<div class="field">
+		<h3>Inserisci il voto</h3>
 	
 			    <input type="hidden" name="idStudent" id="idStudent">
 			    <input type="hidden" name="idExamination" id="idExamination">
@@ -168,15 +165,15 @@
 		        </select>
 
 	      		<input type="submit" value="Modifica">
-	    	</fieldset>
-  		</form>
+		</div>
+	</form>
 	  	<p id="message" class="error-message"></p>
 	</div>
 	
   	<div class="container" id="report-page">
   	
         <div align="left">
-            <button id="backbutton" class="btn btn-back">Indietro</button>
+            <button id="backbutton-report" class="btn btn-back">Indietro</button>
 		</div>
 
     	<div class="top-bar">
@@ -207,7 +204,7 @@
     	</table>
 
    		<div class="mt-4">
-      		<button class="btn btn-small" id="allReports-button">Tutti i verbali</button>
+      		<button class="btn btn-small" id="allreport-button-report">Tutti i verbali</button>
     	</div>
 
     	<p id="message" class="error-message"></p>
@@ -217,7 +214,7 @@
     <div class="container" id="allreports-page">
     
         <div align="left">
-            <button id="backbutton" class="btn btn-back">Indietro</button>
+            <button id="backbutton-allreports" class="btn btn-back">Indietro</button>
 		</div>
 
      	<div class="top-bar">
