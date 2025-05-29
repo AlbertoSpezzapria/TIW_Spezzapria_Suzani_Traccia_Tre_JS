@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	      function(req) {
 	        if (req.readyState == XMLHttpRequest.DONE) {
 	          if (req.status === 200) {
-				alert("Voto inserito con successo!");
+				//alert("Voto inserito con successo!");
 			  	window.location.reload();
 	          }else{
 				console.error(`Errore inserimento voto per studente ${req.status} ${req.responseText}`);
@@ -621,10 +621,12 @@ function updateMultiGrade() {
   let completed = 0;
   let errors = 0;
 
-  // Invia i voti
   multiGrade.forEach(item => {
-    const params = new URLSearchParams(item).toString();
-    makeCall("POST", "ModifyGrade", params, (req) => {
+	document.getElementById("idStudent-mg").value = item.idStudent;
+	document.getElementById("idExamination-mg").value = item.idExamination;
+	document.getElementById("grade-mg").value = item.grade;
+	var form = document.getElementById("multi-grade-form");
+    makeCall("POST", "ModifyGrade", form, (req) => {
       if (req.readyState === XMLHttpRequest.DONE) {
         completed++;
         if (req.status !== 200) {
@@ -632,17 +634,16 @@ function updateMultiGrade() {
           errors++;
         }
 
-        // Solo quando tutte le richieste sono completate
         if (completed === multiGrade.length) {
           if (errors === 0) {
-            alert("Voti inseriti con successo!");
+            //alert("Voti inseriti con successo!");
             window.location.reload();
           } else {
             alert("Alcuni voti non sono stati inseriti correttamente. Controlla la console.");
           }
         }
       }
-    }, false); // false = non resettare il form
+    }, false); 
   });
 }
 
