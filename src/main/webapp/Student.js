@@ -216,6 +216,12 @@ function renderGrade(grade, idExam) {
 	} else if (grade.grade < 18) {
 	  document.getElementById("grade-failed").style.display = "block";
 	  document.getElementById("trash-bin").style.display = "none";
+	} else if (grade.evaluationState === "verbalizzato") {
+		const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
+
+		document.getElementById("trash-bin").style.display = "none";
+		document.getElementById("grade-value").textContent = gradeValue;
+		document.getElementById("grade-valid").style.display = "block";
 	} else {
 	  const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
 
