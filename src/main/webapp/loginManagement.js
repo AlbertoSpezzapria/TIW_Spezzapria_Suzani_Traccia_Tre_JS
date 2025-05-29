@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	      function(x) {
 	        if (x.readyState == XMLHttpRequest.DONE) {
 	          var message = x.responseText;
-			console.log("Response received:", message); // Aggiungi questo
+			console.log("Response received:", message);
 	          switch (x.status) {
 	            case 200:
 				const resp = JSON.parse(message);

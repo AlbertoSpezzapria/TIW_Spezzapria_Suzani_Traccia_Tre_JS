@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	} else {
 	  document.getElementById("id_username").textContent = username;
 	}
+	
+	const role = sessionStorage.getItem("role");
+	if(role != "professor") {
+		window.location.href = "HomeStudent.html";
+	}
 
 	//Logout
 	document.getElementById("logoutbutton").addEventListener("click", () => {
@@ -262,32 +267,42 @@ function loadEnrolledStudents(id) {
 		  window.location.reload();
 	  	});
 		document.getElementById("publish-button").addEventListener('click', () => { 
-		   	makeCall("GET", "PublishGrade?id=" + examination.idExam, null, (req) => {
-		        if (req.readyState == XMLHttpRequest.DONE) {
-		          if (req.status === 200) {
-					//alert("Voti inseriti con successo!");
-				  	window.location.reload();
-		          }else{
-					console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
+			const insertStudents = enrolledStudents.filter(s => s.evaluationState==="inserito")
+			if(insertStudents.length === 0) {
+				alert("Non ci sono studenti in stato 'inserito'");	
+			} else {
+				makeCall("GET", "PublishGrade?id=" + examination.idExam, null, (req) => {
+				    if (req.readyState == XMLHttpRequest.DONE) {
+				      if (req.status === 200) {
+						//alert("Voti inseriti con successo!");
+					  	window.location.reload();
+				      }else{
+						console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
+					  }
+				    }
 				  }
-		        }
-		      }
-		    );
+				);
+			}
 		});
 		document.getElementById("report-button").addEventListener('click', () => { 
-		   	makeCall("GET", "CreateReport?id=" + examination.idExam, null, (req) => {
-		        if (req.readyState == XMLHttpRequest.DONE) {
-		          if (req.status === 200) {
+			const publishedStudents = enrolledStudents.filter(s => s.evaluationState==="pubblicato");
+			if(publishedStudents.length === 0) {
+				alert("Non ci sono studenti in stato 'pubblicato'");	
+			} else {
+				makeCall("GET", "CreateReport?id=" + examination.idExam, null, (req) => {
+				  if (req.readyState == XMLHttpRequest.DONE) {
+				    if (req.status === 200) {
 					//alert("Voti inseriti con successo!");
 					const idReport = JSON.parse(req.responseText);
 					sessionStorage.setItem("selectedId", idReport);
 					sessionStorage.setItem("currentSection", "report-page");
 				  	window.location.reload();
-		          }else{
+				    }else{
 					console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
 				  }
-		        }
-		      });
+				  }
+				});
+			}
 		});
       } else {
 		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
@@ -491,28 +506,35 @@ function renderMultiInsert() {
 	const tbody = document.getElementById("multi-insert-table-body");
 	const notInsertGrade = enrolledStudents.filter(s => s.evaluationState === "non-inserito");
 	tbody.innerHTML = "";
-	notInsertGrade.forEach(student => {
-		const tr = document.createElement("tr");
-		tr.innerHTML = `
-		  <td>${student.idStudent}</td>
-		  <td>${student.surname}</td>
-		  <td>${student.name}</td>
-		  <td>${student.email}</td>
-		  <td>${student.degree}</td>
-		  <td>
-		    <input type="hidden" name="idStudent" value="${student.idStudent}" data-idexamination="${student.idExamination}">
-		    <select name="grade" required data-idstudent="${student.idStudent}" data-idexamination="${idExam}">
-		      <option value="">-- Seleziona voto --</option>
-		      <option value="-1">Assente</option>
-		      <option value="-2">Rimandato</option>
-		      <option value="-3">Riprovato</option>
-		      ${[...Array(13)].map((_, i) => `<option value="${18 + i}">${18 + i}</option>`).join("")}
-		      <option value="31">30L</option>
-		    </select>
-		  </td>
-		`;
-		tbody.appendChild(tr);
-	});
+	if(notInsertGrade.length === 0) {
+		alert("Non ci sono studenti in stato 'non inserito'")
+		document.getElementById("multi-insert-page").style.display = "none";
+		document.getElementById("modal-overlay").style.display = "none";
+
+	} else {
+		notInsertGrade.forEach(student => {
+			const tr = document.createElement("tr");
+			tr.innerHTML = `
+			  <td>${student.idStudent}</td>
+			  <td>${student.surname}</td>
+			  <td>${student.name}</td>
+			  <td>${student.email}</td>
+			  <td>${student.degree}</td>
+			  <td>
+			    <input type="hidden" name="idStudent" value="${student.idStudent}" data-idexamination="${student.idExamination}">
+			    <select name="grade" required data-idstudent="${student.idStudent}" data-idexamination="${idExam}">
+			      <option value="">-- Seleziona voto --</option>
+			      <option value="-1">Assente</option>
+			      <option value="-2">Rimandato</option>
+			      <option value="-3">Riprovato</option>
+			      ${[...Array(13)].map((_, i) => `<option value="${18 + i}">${18 + i}</option>`).join("")}
+			      <option value="31">30L</option>
+			    </select>
+			  </td>
+			`;
+			tbody.appendChild(tr);
+		});
+	}
 }
 
 function updateMultiGrade() {

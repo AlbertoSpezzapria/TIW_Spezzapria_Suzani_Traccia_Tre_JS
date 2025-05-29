@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	} else {
 	  document.getElementById("id_username").textContent = username;
 	}
+	
+	const role = sessionStorage.getItem("role");
+	if(role != "student") {
+		window.location.href = "HomeProfessor.html";
+	}
 
 	//Logout
 	document.getElementById("logoutbutton").addEventListener("click", () => {
