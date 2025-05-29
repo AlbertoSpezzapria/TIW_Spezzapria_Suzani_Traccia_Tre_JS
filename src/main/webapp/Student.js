@@ -59,11 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("course-page").style.display = "block";
 	  	//window.location.reload(); // o cambia direttamente visibilità
 	});
-	document.getElementById("backbutton-grade").addEventListener("click", () => {
-		document.getElementById("grade-page").style.display = "none";
-		document.getElementById("exam-page").style.display = "block";	  
-		//window.location.reload();
-	});
+
 });
 
 function loadCourses() {
@@ -177,6 +173,11 @@ function loadGrade(id) {
 			  document.getElementById("no-show-grade").style.display = "none";
 			  renderGrade(grade, id);
 			}
+			document.getElementById("backbutton-grade").addEventListener("click", () => {
+				document.getElementById("grade-page").style.display = "none";
+				document.getElementById("exam-page").style.display = "block";	  
+				window.location.reload();
+			});
 		  } else {
 			document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento dei voti</p>";
 		  }
