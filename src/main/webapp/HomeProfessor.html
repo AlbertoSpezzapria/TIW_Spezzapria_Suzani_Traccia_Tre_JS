@@ -151,7 +151,7 @@
 		</div>
 	
 		<h3>Studente</h3>
-  		<table>
+  		<table class="table">
    			<thead>
       			<tr>
         			<th>Matricola</th>
@@ -176,7 +176,7 @@
 			    <input type="hidden" name="idExamination" id="idExamination">
 	
 			    <label for="grade">Esito</label>
-			    <select name="grade" id="grade" required>
+			    <select name="grade" id="grade" class="input" required>
 		        <option value="">-- Seleziona voto --</option>
 		        <option value="-1">Assente</option>
 		        <option value="-2">Rimandato</option>
@@ -196,7 +196,7 @@
       		    <option value="30">30</option>
 		        <option value="31">30L</option>
 		        </select>
-				<button id="update-grade-button">Modifica</button>
+				<button id="update-grade-button" class="btn-submit">Modifica</button>
 		</div>
 	</form>
 	  	<p id="message" class="error-message"></p>
