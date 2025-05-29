@@ -123,9 +123,8 @@ let currentSortColumn = null;
 let sortAscending = true;
 const columnLabels = {};
 
-const gradeOrder = ["", "assente", "rimandato", "riprovato"];
-for (let i = 18; i <= 30; i++) gradeOrder.push(String(i));
-gradeOrder.push("30 e lode");
+const gradeOrder = ["0", "-1", "-2", "-3"];
+for (let i = 18; i <= 31; i++) gradeOrder.push(String(i));
 
 function loadCourses() {
   makeCall("GET", "GetCourses", null, (req) => {
@@ -486,11 +485,13 @@ function sortStudents(column) {
     let valA = (a[column] !== undefined && a[column] !== null) ? a[column] : "";
     let valB = (b[column] !== undefined && b[column] !== null) ? b[column] : "";
 
+	
     if (column === "grade") {
       const indexA = gradeOrder.indexOf(valA);
       const indexB = gradeOrder.indexOf(valB);
       return sortAscending ? indexA - indexB : indexB - indexA;
     }
+
 
 	if (column === "idStudent") {
 	  valA = parseInt(valA);
