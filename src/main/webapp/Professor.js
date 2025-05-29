@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	  window.location.href = "login.html";
 	});
 	
+	//Home
+	document.getElementById("homebutton").addEventListener("click", () => {
+		sessionStorage.setItem("currentSection", "home-page");
+		window.location.reload(); 
+	});
+	
 	let homePage = document.getElementById("home-page")
 	let examPage = document.getElementById("exam-page");
 	let enrolledStudentsPage = document.getElementById("enrolled-students-page");
