@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 	let homePage = document.getElementById("home-page");
+	let coursePage = document.getElementById("course-page");
 	let examPage = document.getElementById("exam-page");
 	let gradePage = document.getElementById("grade-page");
 	const currentSection = sessionStorage.getItem("currentSection");
@@ -55,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.getElementById("backbutton-exam").addEventListener("click", () => {
 		document.getElementById("exam-page").style.display = "none";
 		document.getElementById("home-page").style.display = "block";
+		document.getElementById("course-page").style.display = "block";
 	  	//window.location.reload(); // o cambia direttamente visibilità
 	});
 	document.getElementById("backbutton-grade").addEventListener("click", () => {
