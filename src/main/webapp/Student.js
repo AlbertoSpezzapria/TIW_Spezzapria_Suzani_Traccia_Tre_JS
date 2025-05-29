@@ -200,6 +200,28 @@ function loadGrade(id) {
 }
 
 function renderGrade(grade, idExam) {
+	let gradeValue;
+	  switch(grade.grade){
+  		case -1:
+  			gradeValue = "Assente";
+  			break;
+  		case -2:
+  			gradeValue = "Rimandato";
+  			break;
+  		case -3:
+  			gradeValue = "Riprovato";
+  			break;
+  		case 0:
+  			gradeValue = "-";
+  			break;
+  		case 31:
+  			gradeValue = "30L";
+  			break;
+  		default:
+  			gradeValue = grade.grade;
+  			break;
+	  }
+	
 	sessionStorage.setItem("currentSection", "grade-page");
 	
 	document.getElementById("student-id").textContent = grade.idStudent;
@@ -216,19 +238,15 @@ function renderGrade(grade, idExam) {
 	} else if (grade.grade < 18) {
 	  document.getElementById("grade-failed").style.display = "block";
 	  document.getElementById("trash-bin").style.display = "none";
+	  document.getElementById("grade-failed-value").textContent = gradeValue;
 	} else if (grade.evaluationState === "verbalizzato") {
-		const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
-
 		document.getElementById("trash-bin").style.display = "none";
 		document.getElementById("grade-value").textContent = gradeValue;
 		document.getElementById("grade-valid").style.display = "block";
-	} else {
-	  const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
-
+	} else {	  
 	  document.getElementById("grade-value").textContent = gradeValue;
 	  document.getElementById("grade-valid").style.display = "block";
 	  document.getElementById("trash-bin").style.display = "block";
-
 	}
 }
 
