@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	let multiInsertPage = document.getElementById("multi-insert-page");
 	const currentSection = sessionStorage.getItem("currentSection");
 	const id = sessionStorage.getItem("selectedId");
+	
 		
   	//Start page
 	homePage.style.display = "none";
@@ -95,9 +96,36 @@ document.addEventListener("DOMContentLoaded", () => {
 		multiInsertPage.style.display = "none";
 		updateMultiGrade();
 	});
+	
+	document.querySelectorAll("th[data-column]").forEach(th => {
+		th.addEventListener("click", () => {
+	    	const column = th.getAttribute("data-column");
+	      	if (currentSortColumn === column) {
+	        	sortAscending = !sortAscending;
+	      	} else {
+	        	currentSortColumn = column;
+	        	sortAscending = true;
+	      	}
+	      	sortStudents(column);
+			updateSortArrows();
+		});
+	});
+	
+	document.querySelectorAll("th[data-column]").forEach(th => {
+	  const column = th.getAttribute("data-column");
+	  columnLabels[column] = th.textContent.trim();
+	});
+	
 });
 
 let enrolledStudents = [];
+let currentSortColumn = null;
+let sortAscending = true;
+const columnLabels = {};
+
+const gradeOrder = ["", "assente", "rimandato", "riprovato"];
+for (let i = 18; i <= 30; i++) gradeOrder.push(String(i));
+gradeOrder.push("30 e lode");
 
 function loadCourses() {
   makeCall("GET", "GetCourses", null, (req) => {
@@ -452,3 +480,46 @@ function updateMultiGrade() {
 	  });
 	});
 }
+
+function sortStudents(column) {
+  enrolledStudents.sort((a, b) => {
+    let valA = (a[column] !== undefined && a[column] !== null) ? a[column] : "";
+    let valB = (b[column] !== undefined && b[column] !== null) ? b[column] : "";
+
+    if (column === "grade") {
+      const indexA = gradeOrder.indexOf(valA);
+      const indexB = gradeOrder.indexOf(valB);
+      return sortAscending ? indexA - indexB : indexB - indexA;
+    }
+
+	if (column === "idStudent") {
+	  valA = parseInt(valA);
+	  valB = parseInt(valB);
+	  return sortAscending ? valA - valB : valB - valA;
+	}
+
+    valA = typeof valA === "string" ? valA.toLowerCase() : "";
+    valB = typeof valB === "string" ? valB.toLowerCase() : "";
+
+    if (valA < valB) return sortAscending ? -1 : 1;
+    if (valA > valB) return sortAscending ? 1 : -1;
+    return 0;
+  });
+
+  renderStudents(enrolledStudents);
+}
+
+function updateSortArrows() {
+  document.querySelectorAll("th[data-column]").forEach(th => {
+	const column = th.getAttribute("data-column");
+	const baseLabel = columnLabels[column]; 
+	if (column === currentSortColumn) {
+	  const arrow = sortAscending ? " ▲" : " ▼";
+	  th.textContent = baseLabel + arrow;
+	} else {
+	  th.textContent = baseLabel;
+	}
+  });
+}
+
+
