@@ -49,7 +49,7 @@
             <button id="backbutton-exam" class="btn btn-back">Indietro</button>
 		</div>
 		<div class="top-bar">
-			<h2 id="course_name">Nome Corso</h2>
+			<h2 id="course-name-exam">Nome Corso</h2>
 		</div>
 
 		<h3>Appelli disponibili</h3>
@@ -77,12 +77,12 @@
 	    	<button id="backbutton-grade" class="btn btn-back">Indietro</button>
 		</div>
 		<div class="top-bar">
-			<h2 id="course_name">Nome Corso</h2>
+			<h2 id="course-name-grade">Nome Corso</h2>
 		</div>
 		
 		<h3>Valutazione</h3>
 	
-		<div id="show-grade" style="display: block;"> 
+		<div id="show-grade" draggable="true" style="display: block;"> 
 	
 		  	<p>Studente</p>
 		  	<table class="table" id="grade-table">
@@ -115,11 +115,7 @@
 		    	<div id="grade-rejected" style="display: none;">
 		      		<p>Il voto è stato rifiutato</p>
 		    	</div>
-		
-		    	<div id="reject-grade-button" style="display: block;">
-		      		<button class="btn btn-small" id="reject-grade">Rifiuta</button>
-		    	</div>
-		  	</div>
+			</div>
 		</div>
 	
 		<div id="no-show-grade" style="display: none;"> <!-- Mostra se student == null -->
@@ -129,6 +125,15 @@
 	  		<div id="enrolled-waiting" style="display: none;">
 	    		<p>Voto non ancora definito</p>
 	  		</div>
+		</div>
+		
+		<div class="bin" id="trash-bin">
+  			<p style="text-align: center;">🗑 TRASCINA QUI PER RIFIUTARE️</p>
+		</div>
+		<div class="modal1" id="confirm-reject">
+		 	<p>Confermare il rifiuto del voto</p>
+			<button id="cancel-btn">CANCELLA</button>
+			<button id="confirm-btn">CONFERMA</button>
 		</div>
 	</div>
 

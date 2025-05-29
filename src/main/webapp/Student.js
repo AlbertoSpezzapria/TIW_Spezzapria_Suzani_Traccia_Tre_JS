@@ -67,6 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+let draggedBox = null;
+let idEx;
+
 function loadCourses() {
   makeCall("GET", "GetCourses", null, (req) => {
     if (req.readyState === XMLHttpRequest.DONE) {
@@ -114,7 +117,7 @@ function loadExaminations(id) {
         const data = JSON.parse(req.responseText);
 		const course = data.course;
 		const examinations = data.examinations;
-		document.getElementById("course_name").textContent = course.name;
+		document.getElementById("course-name-exam").textContent = course.name;
 		if (examinations.length === 0) {
 		  document.getElementById("show_examinations").style.display = "none";
 		  document.getElementById("no_show_examinations").style.display = "block";
@@ -159,19 +162,22 @@ function loadGrade(id) {
 			const examination = data.examination;
 			const grade = data.student;
 			const enrolled = data.enrolled;
-			document.getElementById("course_name").textContent = course.name;
+			idEx = examination.idExam;
+			document.getElementById("course-name-grade").textContent = course.name;
 			if (!enrolled) {
 			  // Mostra messaggio "non iscritto"
 			  document.getElementById("show-grade").style.display = "none";
 			  document.getElementById("no-show-grade").style.display = "block";
 			  document.getElementById("not-enrolled").style.display = "block";
 			  document.getElementById("enrolled-waiting").style.display = "none";
+			  document.getElementById("trash-bin").style.display = "none";
 			} else if (!grade || grade.grade === null) {
 			  // Mostra messaggio "voto non ancora definito"
 			  document.getElementById("show-grade").style.display = "none";
 			  document.getElementById("no-show-grade").style.display = "block";
 			  document.getElementById("not-enrolled").style.display = "none";
 			  document.getElementById("enrolled-waiting").style.display = "block";
+			  document.getElementById("trash-bin").style.display = "none";
 			} else {
 			  // Mostra i dati del voto
 			  document.getElementById("show-grade").style.display = "block";
@@ -194,8 +200,6 @@ function loadGrade(id) {
 function renderGrade(grade, idExam, course) {
 	sessionStorage.setItem("currentSection", "grade-page");
 	
-	document.getElementById("course-name").textContent = course.name;
-
 	document.getElementById("student-id").textContent = grade.idStudent;
 	document.getElementById("student-surname").textContent = grade.surname;
 	document.getElementById("student-name").textContent = grade.name;
@@ -203,13 +207,13 @@ function renderGrade(grade, idExam, course) {
 	document.getElementById("grade-valid").style.display = "none";
 	document.getElementById("grade-failed").style.display = "none";
 	document.getElementById("grade-rejected").style.display = "none";
-	document.getElementById("reject-grade-button").style.display = "none";
-
 
 	if (grade.evaluationState === "rifiutato") {
 	  document.getElementById("grade-rejected").style.display = "block";
+	  document.getElementById("trash-bin").style.display = "none";
 	} else if (grade.grade < 18) {
 	  document.getElementById("grade-failed").style.display = "block";
+	  document.getElementById("trash-bin").style.display = "none";
 	} else {
 	  const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
 	  const rejectButton = document.getElementById("reject-grade-button");
@@ -217,6 +221,8 @@ function renderGrade(grade, idExam, course) {
 	  document.getElementById("grade-value").textContent = gradeValue;
 	  document.getElementById("grade-valid").style.display = "block";
 	  document.getElementById("reject-grade-button").style.display = "block";
+	  document.getElementById("trash-bin").style.display = "block";
+
 
 	  rejectButton.onclick = () => {
 		const url = "RejectGrade?id="+encodeURIComponent(idExam);
@@ -232,3 +238,43 @@ function renderGrade(grade, idExam, course) {
 	  };
 	}
 }
+
+const gradeBox = document.getElementById("show-grade");
+gradeBox.addEventListener("dragstart", function (e) {
+	draggedBox = e.target;
+});
+
+const trashBin = document.getElementById("trash-bin");
+trashBin.addEventListener("dragover", function(e) {
+	e.preventDefault();
+});
+trashBin.addEventListener("drop", function(e){
+	e.preventDefault();
+	document.getElementById("confirm-reject").style.display = "block";
+});
+
+document.getElementById("cancel-btn").addEventListener("click", () => {
+	document.getElementById("confirm-reject").style.display = "none";
+	draggedBox = null;
+});
+
+document.getElementById("confirm-btn").addEventListener("click", () => {
+	document.getElementById("confirm-reject").style.display = "none";
+	
+	const url = "RejectGrade?id=" + encodeURIComponent(idEx);
+	makeCall("GET", url, null, (req) => {
+		if (req.readyState === XMLHttpRequest.DONE) {
+			if (req.status === 200) {
+				loadGrade(idEx);
+			} else {
+				alert("Errore nel rifiuto del voto");
+			}
+		}
+	});
+	draggedBox = null;
+});
+
+
+
+
+
