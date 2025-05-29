@@ -60,23 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	  //homePage.style.display = "block";
 	  window.location.reload(); // o cambia direttamente visibilità
 	});
-	document.getElementById("backbutton-enrolled-students").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "exam-page");//da sistemare 
-	  window.location.reload();
-  	});
 	document.getElementById("backbutton-grade-form").addEventListener("click", () => {
 	  //sessionStorage.setItem("currentSection", "enrolled-students-page");
 	  window.location.reload();
 	});
-	document.getElementById("backbutton-report").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "enrolled-students-page");//da sistemare 
-	  window.location.reload();
-  	});
 	document.getElementById("backbutton-allreports").addEventListener("click", () => {
 	  sessionStorage.setItem("currentSection", "home-page");
 	  window.location.reload();
-  	});
-		
+  	});	
+	
+	//allReport buttons
 	document.getElementById("allreport-button-home").addEventListener("click", () =>{
 		homePage.style.display = "none";
 		allReportsPage.style.display = "block";
@@ -87,6 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		allReportsPage.style.display = "block";
 		loadAllReports();
 	});
+	
+	//
 	document.getElementById("multiinsertbutton").addEventListener("click", () =>{
 		multiInsertPage.style.display = "block";
 		renderMultiInsert();
@@ -95,9 +90,31 @@ document.addEventListener("DOMContentLoaded", () => {
 		multiInsertPage.style.display = "none";
 		updateMultiGrade();
 	});
+	
+	//modify grade button
+	document.getElementById("update-grade-button").addEventListener('click', (e) => {
+	  var form = e.target.closest("form");
+	  if (form.checkValidity()) {
+	    makeCall("POST", 'ModifyGrade', e.target.closest("form"),
+	      function(req) {
+	        if (req.readyState == XMLHttpRequest.DONE) {
+	          if (req.status === 200) {
+				alert("Voto inserito con successo!");
+			  	window.location.reload();
+	          }else{
+				console.error(`Errore inserimento voto per studente ${req.status} ${req.responseText}`);
+			  }
+	        }
+	      },false);
+	  } else {
+	  	 form.reportValidity();
+	  }
+	});
 });
 
 let enrolledStudents = [];
+let idExam;
+let currentSort = {column: null, ascending: true};
 
 function loadCourses() {
   makeCall("GET", "GetCourses", null, (req) => {
@@ -127,8 +144,8 @@ function renderCourses(courses) {
       <td>${course.name}</td>
       <td><button class="btn btn-small view-exams-btn" data-id="${course.idCourse}">Visualizza Appelli</button></td>
     `;
-    tr.querySelector(".view-exams-btn").addEventListener("click", () => {
-	  const courseId = event.target.dataset.id;
+    tr.querySelector(".view-exams-btn").addEventListener("click", (e) => {
+	  const courseId = e.target.dataset.id;
 	  sessionStorage.setItem("selectedId", courseId);
 	  sessionStorage.setItem("currentSection", "exam-page");
 	  document.getElementById("exam-page").style.display = "block";
@@ -170,8 +187,8 @@ function renderExaminations(examinations) {
       <td>${examination.date}</td>
       <td><button class="btn btn-small view-students-btn" data-id="${examination.idExam}">Visualizza Iscritti</button></td>
     `;
-    tr.querySelector(".view-students-btn").addEventListener("click", () => {
-		const examinationId = event.target.dataset.id;
+    tr.querySelector(".view-students-btn").addEventListener("click", (e) => {
+		const examinationId = e.target.dataset.id;
 		sessionStorage.setItem("selectedId", examinationId);
 		sessionStorage.setItem("currentSection", "enrolled-students-page");
 		document.getElementById("enrolled-students-page").style.display = "block";
@@ -189,6 +206,7 @@ function loadEnrolledStudents(id) {
         const data = JSON.parse(req.responseText);
 		const course = data.course;
 		const examination = data.examination;
+		idExam = examination.idExam;
 		const students = data.students;
 		enrolledStudents = data.students;
 		document.getElementById("course-exam").textContent = course.name + " : " + examination.date;
@@ -197,27 +215,115 @@ function loadEnrolledStudents(id) {
 		  document.getElementById("no_show_enrolled").style.display = "block";
 		} else {
 		  document.getElementById("no_show_enrolled").style.display = "none";
-		  renderStudents(students);
+		  renderStudents();
 		}
+		document.getElementById("backbutton-enrolled-students").addEventListener("click", () => {
+		  sessionStorage.setItem("currentSection", "exam-page");
+		  sessionStorage.setItem("selectedId", course.idCourse);
+		  window.location.reload();
+	  	});
+		document.getElementById("publish-button").addEventListener('click', () => { 
+		   	makeCall("GET", "PublishGrade?id=" + examination.idExam, null, (req) => {
+		        if (req.readyState == XMLHttpRequest.DONE) {
+		          if (req.status === 200) {
+					//alert("Voti inseriti con successo!");
+				  	window.location.reload();
+		          }else{
+					console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
+				  }
+		        }
+		      }
+		    );
+		});
+		document.getElementById("report-button").addEventListener('click', () => { 
+		   	makeCall("GET", "CreateReport?id=" + examination.idExam, null, (req) => {
+		        if (req.readyState == XMLHttpRequest.DONE) {
+		          if (req.status === 200) {
+					//alert("Voti inseriti con successo!");
+					const idReport = JSON.parse(req.responseText);
+					sessionStorage.setItem("selectedId", idReport);
+					sessionStorage.setItem("currentSection", "report-page");
+				  	window.location.reload();
+		          }else{
+					console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
+				  }
+		        }
+		      });
+		});
       } else {
 		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
       }
     }
   });
 }
+	
 
-function renderStudents(students) {
+
+function renderStudents() {
   const tbody = document.getElementById("students-table-body");
   tbody.innerHTML = "";
-  students.forEach(student => {
+  enrolledStudents.forEach(student => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `
+	let grade;
+	switch(student.grade){
+		case -1:
+			grade = "Assente";
+			break;
+		case -2:
+			grade = "Rimandato";
+			break;
+		case -3:
+			grade = "Riprovato";
+			break;
+		case 0:
+			grade = "-";
+			break;
+		case 31:
+			grade = "30L";
+			break;
+		default:
+			grade = student.grade;
+			break;
+	}
+	if(student.evaluationState === "non-inserito" || student.evaluationState === "inserito"){
+		tr.innerHTML = `
+	      <td>${student.idStudent}</td>
+		  <td>${student.surname}</td>
+		  <td>${student.name}</td>
+		  <td>${student.email}</td>
+		  <td>${student.degree}</td>
+		  <td>${grade}</td>
+		  <td>${student.evaluationState}</td>
+	      <td><button class="btn btn-small view-students-btn" data-id="${student.idStudent}">Modifica</button></td>
+	    `;
+	    tr.querySelector(".view-students-btn").addEventListener("click", (e) => {
+			const studentId = e.target.dataset.id;
+			const examinationId = sessionStorage.getItem("selectedId");
+			//sessionStorage.setItem("selectedId", studentId);
+			//sessionStorage.setItem("currentSection", "enrolled-students-page");
+			document.getElementById("form-grade-page").style.display = "block";
+			document.getElementById("enrolled-students-page").style.display = "none";
+			loadGradeForm(examinationId, studentId);
+	    });
+	}else{
+		tr.innerHTML = `
+	      <td>${student.idStudent}</td>
+		  <td>${student.surname}</td>
+		  <td>${student.name}</td>
+		  <td>${student.email}</td>
+		  <td>${student.degree}</td>
+		  <td>${grade}</td>
+		  <td>${student.evaluationState}</td>
+		  <td> <td>	      
+	    `;
+	}
+    /*tr.innerHTML = `
       <td>${student.idStudent}</td>
 	  <td>${student.surname}</td>
 	  <td>${student.name}</td>
 	  <td>${student.email}</td>
 	  <td>${student.degree}</td>
-	  <td>${student.grade}</td>
+	  <td>${grade}</td>
 	  <td>${student.evaluationState}</td>
       <td><button class="btn btn-small view-students-btn" data-id="${student.idStudent}">Modifica</button></td>
     `;
@@ -229,7 +335,7 @@ function renderStudents(students) {
 		document.getElementById("form-grade-page").style.display = "block";
 		document.getElementById("enrolled-students-page").style.display = "none";
 		loadGradeForm(examinationId, studentId);
-    });
+    });*/
     tbody.appendChild(tr);
   });
 }
@@ -264,8 +370,8 @@ function renderAllReports(reports) {
 	  <td>${report.timestamp}</td>
       <td><button class="btn btn-small view-report-btn" data-id="${report.idReport}">Vai al verbale</button></td>
     `;
-    tr.querySelector(".view-report-btn").addEventListener("click", () => {
-		const reportId = event.target.dataset.id;
+    tr.querySelector(".view-report-btn").addEventListener("click", (e) => {
+		const reportId = e.target.dataset.id;
 		sessionStorage.setItem("selectedId", reportId);
 		sessionStorage.setItem("currentSection", "report-page");
 		document.getElementById("report-page").style.display = "block";
@@ -295,6 +401,11 @@ function loadReport(id) {
 		  renderAllReports(reports);
 		}*/
 		renderReport(reportRaws);
+		document.getElementById("backbutton-report").addEventListener("click", () => {
+		  sessionStorage.setItem("currentSection", "enrolled-students-page");
+		  sessionStorage.setItem("selectedId", report.idExam);
+		  window.location.reload();
+	  	});
       } else {
 		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
       }
@@ -307,11 +418,32 @@ function renderReport(reportRaws) {
   tbody.innerHTML = "";
   reportRaws.forEach(student => {
     const tr = document.createElement("tr");
+	let grade;
+	switch(student.grade){
+		case -1:
+			grade = "Assente";
+			break;
+		case -2:
+			grade = "Rimandato";
+			break;
+		case -3:
+			grade = "Riprovato";
+			break;
+		case 0:
+			grade = "-";
+			break;
+		case 31:
+			grade = "30L";
+			break;
+		default:
+			grade = student.grade;
+			break;
+	}
     tr.innerHTML = `
       <td>${student.idStudent}</td>
 	  <td>${student.name}</td>
 	  <td>${student.surname}</td>
-	  <td>${student.grade}</td>
+	  <td>${grade}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -324,6 +456,9 @@ function loadGradeForm(idE,idS) {
         const data = JSON.parse(req.responseText);
 		const idExamination = data.idExamination;
 		const student = data.student;
+		document.getElementById("idStudent").value = student.idStudent;
+		document.getElementById("idExamination").value = idExamination;
+		document.getElementById("grade").value = student.grade;
 		document.getElementById("student-id").textContent = student.idStudent;
 		document.getElementById("student-surname").textContent = student.surname;
 		document.getElementById("student-name").textContent = student.name;
@@ -348,7 +483,7 @@ function renderMultiInsert() {
 		  <td>${student.degree}</td>
 		  <td>
 		    <input type="hidden" name="idStudent" value="${student.idStudent}" data-idexamination="${student.idExamination}">
-		    <select name="grade" required data-idstudent="${student.idStudent}" data-idexamination="${student.idExamination}">
+		    <select name="grade" required data-idstudent="${student.idStudent}" data-idexamination="${idExam}">
 		      <option value="">-- Seleziona voto --</option>
 		      <option value="-1">Assente</option>
 		      <option value="-2">Rimandato</option>
@@ -412,7 +547,7 @@ function updateMultiGrade() {
 }
 */
 
-function updateMultiGrade() {
+/*function updateMultiGrade() {
 	  const selects = document.querySelectorAll("select[name='grade']");
 	  const multiGrade = [];
 
@@ -443,12 +578,64 @@ function updateMultiGrade() {
 	        if (req.status !== 200) {
 	          console.error(`Errore inserimento voto per studente ${item.idStudent}`);
 	        }
-	        if (completed === multiGrade.length) {
-	          alert("Voti inseriti con successo!");
-	          loadEnrolledStudents(item.idExamination);
-	        }
 	      }
 	    }, false);
 	  });
+	  if (completed === multiGrade.length) {
+	      //alert("Voti inseriti con successo!");
+		  window.location.reload();
+	      //loadEnrolledStudents(item.idExamination);
+	    }
 	});
+}*/
+
+function updateMultiGrade() {
+  const selects = document.querySelectorAll("select[name='grade']");
+  const multiGrade = [];
+
+  selects.forEach(select => {
+    const grade = select.value;
+    if (grade !== "") {
+      const idStudent = select.dataset.idstudent;
+      const idExamination = select.dataset.idexamination;
+
+      multiGrade.push({
+        idStudent,
+        idExamination,
+        grade
+      });
+    }
+  });
+
+  if (multiGrade.length === 0) {
+    alert("Inserisci almeno un voto.");
+    return;
+  }
+
+  let completed = 0;
+  let errors = 0;
+
+  // Invia i voti
+  multiGrade.forEach(item => {
+    const params = new URLSearchParams(item).toString();
+    makeCall("POST", "ModifyGrade", params, (req) => {
+      if (req.readyState === XMLHttpRequest.DONE) {
+        completed++;
+        if (req.status !== 200) {
+          console.error(`Errore inserimento voto per studente ${item.idStudent}`);
+          errors++;
+        }
+
+        // Solo quando tutte le richieste sono completate
+        if (completed === multiGrade.length) {
+          if (errors === 0) {
+            alert("Voti inseriti con successo!");
+            window.location.reload();
+          } else {
+            alert("Alcuni voti non sono stati inseriti correttamente. Controlla la console.");
+          }
+        }
+      }
+    }, false); // false = non resettare il form
+  });
 }

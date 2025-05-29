@@ -37,8 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	              break;
 	          }
 	        }
-	      }
-	    );
+	      });
 	  } else {
 	  	 form.reportValidity();
 	  }

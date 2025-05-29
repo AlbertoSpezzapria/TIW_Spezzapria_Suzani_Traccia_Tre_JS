@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import com.google.gson.Gson;
+
 import DAO.ReportDAO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -62,10 +65,10 @@ public class CreateReport extends HttpServlet {
 			return;
 		}
 		
-		String path = getServletContext().getContextPath();
-		String target = "/GetReport";
-		path = path + target;
-		response.sendRedirect(path + "?id=" + idReport);		
+		String json = new Gson().toJson(idReport);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
 	}
 	
 	public void destroy() {
