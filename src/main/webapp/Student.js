@@ -19,6 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	  sessionStorage.clear();
 	  window.location.href = "login.html";
 	});
+	//Home
+	document.getElementById("homebutton").addEventListener("click", () => {
+		sessionStorage.setItem("currentSection", "home-page");
+		window.location.reload(); 
+	});
 	
 	//Start page
 	homePage.style.display = "none";
@@ -171,7 +176,7 @@ function loadGrade(id) {
 			  // Mostra i dati del voto
 			  document.getElementById("show-grade").style.display = "block";
 			  document.getElementById("no-show-grade").style.display = "none";
-			  renderGrade(grade, id);
+			  renderGrade(grade, id, course);
 			}
 			document.getElementById("backbutton-grade").addEventListener("click", () => {
 				document.getElementById("grade-page").style.display = "none";
@@ -186,8 +191,10 @@ function loadGrade(id) {
 	})
 }
 
-function renderGrade(grade, idExam) {
+function renderGrade(grade, idExam, course) {
 	sessionStorage.setItem("currentSection", "grade-page");
+	
+	document.getElementById("course-name").textContent = course.name;
 
 	document.getElementById("student-id").textContent = grade.idStudent;
 	document.getElementById("student-surname").textContent = grade.surname;
@@ -204,7 +211,7 @@ function renderGrade(grade, idExam) {
 	} else if (grade.grade < 18) {
 	  document.getElementById("grade-failed").style.display = "block";
 	} else {
-	  const gradeValue = grade.grade === 31 ? "30 e lode" : grade.grade;
+	  const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
 	  const rejectButton = document.getElementById("reject-grade-button");
 
 	  document.getElementById("grade-value").textContent = gradeValue;
