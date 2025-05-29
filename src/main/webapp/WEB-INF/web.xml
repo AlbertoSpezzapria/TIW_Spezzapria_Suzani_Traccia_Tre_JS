@@ -20,4 +20,61 @@
     <param-name>dbDriver</param-name>
     <param-value>com.mysql.cj.jdbc.Driver</param-value>
   </context-param> 
+  <filter>
+	<filter-name>SessionChecker</filter-name>
+	<filter-class>filters.SessionChecker</filter-class>
+</filter>
+<filter>
+	<filter-name>ProfessorFilter</filter-name>
+	<filter-class>filters.ProfessorFilter</filter-class>
+</filter>
+<filter>
+	<filter-name>StudentFilter</filter-name>
+	<filter-class>filters.StudentFilter</filter-class>
+</filter>
+<filter>
+	<filter-name>SaveLastPageVisited</filter-name>
+	<filter-class>filters.SaveLastPageVisited</filter-class>
+</filter>
+<filter-mapping> 
+    <filter-name>SessionChecker</filter-name> 
+    <url-pattern>/GetCourses</url-pattern> 
+    <url-pattern>/GetExamination</url-pattern> 
+    <url-pattern>/GetEnrolledStudent</url-pattern> 
+    <url-pattern>/GoToGradeForm</url-pattern> 
+    <url-pattern>/ModifyGrade</url-pattern> 
+    <url-pattern>/PublishGrade</url-pattern>
+    <url-pattern>/CreateReport</url-pattern>
+    <url-pattern>/GetReport</url-pattern>
+    <url-pattern>/GetAllReports</url-pattern>
+    <url-pattern>/GetGrade</url-pattern>
+    <url-pattern>/Logout</url-pattern> 
+ </filter-mapping> 
+ <filter-mapping> 
+    <filter-name>ProfessorFilter</filter-name> 
+    <url-pattern>/GetEnrolledStudent</url-pattern> 
+    <url-pattern>/GoToGradeForm</url-pattern> 
+    <url-pattern>/ModifyGrade</url-pattern> 
+    <url-pattern>/PublishGrade</url-pattern>
+    <url-pattern>/CreateReport</url-pattern>
+    <url-pattern>/GetReport</url-pattern>
+    <url-pattern>/GetAllReports</url-pattern>
+ </filter-mapping>
+ <filter-mapping> 
+    <filter-name>StudentFilter</filter-name> 
+    <url-pattern>/GetGrade</url-pattern>
+ </filter-mapping>
+ <filter-mapping> 
+    <filter-name>SaveLastPageVisited</filter-name> 
+    <url-pattern>/GetCourses</url-pattern> 
+    <url-pattern>/GetExamination</url-pattern> 
+    <url-pattern>/GetEnrolledStudent</url-pattern> 
+    <url-pattern>/GoToGradeForm</url-pattern> 
+    <url-pattern>/ModifyGrade</url-pattern> 
+    <url-pattern>/PublishGrade</url-pattern>
+    <url-pattern>/CreateReport</url-pattern>
+    <url-pattern>/GetReport</url-pattern>
+    <url-pattern>/GetAllReports</url-pattern>
+    <url-pattern>/GetGrade</url-pattern>
+ </filter-mapping>
 </web-app>

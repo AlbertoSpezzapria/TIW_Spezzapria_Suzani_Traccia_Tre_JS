@@ -218,26 +218,11 @@ function renderGrade(grade, idExam) {
 	  document.getElementById("trash-bin").style.display = "none";
 	} else {
 	  const gradeValue = grade.grade === 31 ? "30L" : grade.grade;
-	  const rejectButton = document.getElementById("reject-grade-button");
 
 	  document.getElementById("grade-value").textContent = gradeValue;
 	  document.getElementById("grade-valid").style.display = "block";
-	  document.getElementById("reject-grade-button").style.display = "block";
 	  document.getElementById("trash-bin").style.display = "block";
 
-
-	  rejectButton.onclick = () => {
-		const url = "RejectGrade?id="+encodeURIComponent(idExam);
-		makeCall("GET", url, null, (req) => {
-			if(req.readyState === XMLHttpRequest.DONE) {
-				if(req.status === 200) {
-					loadGrade(idExam);
-				} else {
-					alert("Errore nel rifiuto del voto");
-				}
-			}
-		});
-	  };
 	}
 }
 
