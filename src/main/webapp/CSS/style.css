@@ -205,3 +205,22 @@ body {
 .divbutton{
 	margin-top: 15px;
 }
+
+.bin{
+	width: 100px; 
+	height: 100px; 
+	background-color: #eee; 
+	border: 2px dashed red; 
+	margin-top: 20px;
+}
+
+.modal1{
+	display:none;
+	position:fixed;
+	top:30%; 
+	left:35%; 
+	background:#fff; 
+	padding:20px; 
+	border:1px solid #000; 
+	z-index:1000;
+}
