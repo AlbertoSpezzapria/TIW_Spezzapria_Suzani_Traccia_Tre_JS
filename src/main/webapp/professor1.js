@@ -344,25 +344,6 @@ function renderStudents() {
 		  <td> <td>	      
 	    `;
 	}
-    /*tr.innerHTML = `
-      <td>${student.idStudent}</td>
-	  <td>${student.surname}</td>
-	  <td>${student.name}</td>
-	  <td>${student.email}</td>
-	  <td>${student.degree}</td>
-	  <td>${grade}</td>
-	  <td>${student.evaluationState}</td>
-      <td><button class="btn btn-small view-students-btn" data-id="${student.idStudent}">Modifica</button></td>
-    `;
-    tr.querySelector(".view-students-btn").addEventListener("click", () => {
-		const studentId = event.target.dataset.id;
-		const examinationId = sessionStorage.getItem("selectedId");
-		//sessionStorage.setItem("selectedId", studentId);
-		//sessionStorage.setItem("currentSection", "enrolled-students-page");
-		document.getElementById("form-grade-page").style.display = "block";
-		document.getElementById("enrolled-students-page").style.display = "none";
-		loadGradeForm(examinationId, studentId);
-    });*/
     tbody.appendChild(tr);
   });
 }
