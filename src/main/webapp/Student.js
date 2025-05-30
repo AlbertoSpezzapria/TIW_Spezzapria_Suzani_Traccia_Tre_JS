@@ -1,6 +1,8 @@
+/**
+ * 
+ */
 document.addEventListener("DOMContentLoaded", () => {
 	let homePage = document.getElementById("home-page");
-	let coursePage = document.getElementById("course-page");
 	let examPage = document.getElementById("exam-page");
 	let gradePage = document.getElementById("grade-page");
 	const currentSection = sessionStorage.getItem("currentSection");
@@ -27,7 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	//Home
 	document.getElementById("homebutton").addEventListener("click", () => {
 		sessionStorage.setItem("currentSection", "home-page");
-		window.location.reload(); 
+		["home-page", "exam-page", "grade-page"].forEach(page => {
+		    document.getElementById(page).style.display = "none";
+		});
+		document.getElementById("home-page").style.display = "block";
+		loadCourses();
 	});
 	
 	//Start page
@@ -64,7 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	document.getElementById("backbutton-exam").addEventListener("click", () => {
 	  sessionStorage.setItem("currentSection", "home-page");
-	  window.location.reload(); 
+	  homePage.style.display = "block";
+	  examPage.style.display = "none";
+	  loadCourses();
 	});
 
 });
@@ -81,6 +89,7 @@ function loadCourses() {
 		  document.getElementById("show_courses").style.display = "none";
 		  document.getElementById("no_show_courses").style.display = "block";
 		} else {
+		  document.getElementById("show_courses").style.display = "block";
 		  document.getElementById("no_show_courses").style.display = "none";
 		  renderCourses(courses);
 		}
@@ -100,8 +109,8 @@ function renderCourses(courses) {
       <td>${course.name}</td>
       <td><button class="btn btn-small view-exams-btn" data-id="${course.idCourse}">Visualizza Appelli</button></td>
     `;
-    tr.querySelector(".view-exams-btn").addEventListener("click", () => {
-	  const courseId = event.target.dataset.id;
+    tr.querySelector(".view-exams-btn").addEventListener("click", (e) => {
+	  const courseId = e.target.dataset.id;
 	  sessionStorage.setItem("selectedId", courseId);
 	  sessionStorage.setItem("currentSection", "exam-page");
 	  document.getElementById("exam-page").style.display = "block";
@@ -124,6 +133,7 @@ function loadExaminations(id) {
 		  document.getElementById("show_examinations").style.display = "none";
 		  document.getElementById("no_show_examinations").style.display = "block";
 		} else {
+		  document.getElementById("show_examinations").style.display = "block";
 		  document.getElementById("no_show_examinations").style.display = "none";
 		  renderExaminations(examinations);
 		}
@@ -189,7 +199,9 @@ function loadGrade(id) {
 			document.getElementById("backbutton-grade").addEventListener("click", () => {
 			  sessionStorage.setItem("currentSection", "exam-page");
 			  sessionStorage.setItem("selectedId", course.idCourse);
-			  window.location.reload(); 
+			  document.getElementById("exam-page").style.display = "block";
+			  document.getElementById("grade-page").style.display = "none";
+			  loadExaminations(course.idCourse);
 			});
 		  } else {
 			document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento dei voti</p>";

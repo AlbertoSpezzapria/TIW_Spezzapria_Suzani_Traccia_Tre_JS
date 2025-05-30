@@ -27,7 +27,7 @@ public class ReportDAO {
 	    
 	    String updateRejected = "UPDATE registered SET grade = '-2' WHERE idExamination = ? AND evaluationState = 'rifiutato'";
 	    
-	    String selectVerbalized = "SELECT idStudent, grade FROM registered WHERE idExamination = ? AND evaluationState = 'verbalizzato'";
+	    String selectVerbalized = "SELECT idStudent, grade FROM registered WHERE idExamination = ? AND (evaluationState = 'pubblicato' OR evaluationState = 'rifiutato')";
 
 	    String insertReportRaw = "INSERT INTO reportlline (idReport, idStudent, grade) VALUES (?, ?, ?)";
 	    
@@ -35,27 +35,10 @@ public class ReportDAO {
 
 	    try {
 	    	dbConnection.setAutoCommit(false); 
-
-	        try (PreparedStatement ps2 = dbConnection.prepareStatement(insertReport, Statement.RETURN_GENERATED_KEYS)) {
-	            ps2.setInt(1, idExamination);
-	            ps2.executeUpdate();
-	            try (ResultSet rs = ps2.getGeneratedKeys()) {
-	                if (rs.next()) {
-	                    reportId = rs.getInt(1);
-	                } else {
-	                    throw new SQLException("Creazione report fallita, nessun ID ottenuto.");
-	                }
-	            }
-	        }	 
 	        
 	        try (PreparedStatement ps1 = dbConnection.prepareStatement(updateRejected)) {
 	            ps1.setInt(1, idExamination);
 	            ps1.executeUpdate();
-	        }
-	        
-	        try (PreparedStatement ps3 = dbConnection.prepareStatement(updateRegistered)) {
-	            ps3.setInt(1, idExamination);
-	            ps3.executeUpdate();
 	        }
 	        
 	        List<int[]> studentGrades = new ArrayList<>();
@@ -68,14 +51,36 @@ public class ReportDAO {
 	            }
 	        }
 	        
-	        try (PreparedStatement ps = dbConnection.prepareStatement(insertReportRaw)) {
-	            for (int[] sg : studentGrades) {
-	                ps.setInt(1, reportId);
-	                ps.setInt(2, sg[0]);
-	                ps.setInt(3, sg[1]);
-	                ps.addBatch();
-	            }
-	            ps.executeBatch();
+	        if(!studentGrades.isEmpty()) {
+	        	
+	        	try (PreparedStatement ps2 = dbConnection.prepareStatement(insertReport, Statement.RETURN_GENERATED_KEYS)) {
+		            ps2.setInt(1, idExamination);
+		            ps2.executeUpdate();
+		            try (ResultSet rs = ps2.getGeneratedKeys()) {
+		                if (rs.next()) {
+		                    reportId = rs.getInt(1);
+		                } else {
+		                    throw new SQLException("Creazione report fallita, nessun ID ottenuto.");
+		                }
+		            }
+		        }	 
+	        	
+	        	
+	        	try (PreparedStatement ps = dbConnection.prepareStatement(insertReportRaw)) {
+		            for (int[] sg : studentGrades) {
+		                ps.setInt(1, reportId);
+		                ps.setInt(2, sg[0]);
+		                ps.setInt(3, sg[1]);
+		                ps.addBatch();
+		            }
+		            ps.executeBatch();
+	            
+	        	}
+	        }
+	        
+	        try (PreparedStatement ps3 = dbConnection.prepareStatement(updateRegistered)) {
+	            ps3.setInt(1, idExamination);
+	            ps3.executeUpdate();
 	        }
 	        dbConnection.commit();
 

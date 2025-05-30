@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 document.addEventListener("DOMContentLoaded", () => {
 	
 	//Username 
@@ -22,7 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	//Home
 	document.getElementById("homebutton").addEventListener("click", () => {
 		sessionStorage.setItem("currentSection", "home-page");
-		window.location.reload(); 
+		["home-page", "exam-page", "enrolled-students-page", "form-grade-page", "report-page", "allreports-page", "multi-insert-page"].forEach(page => {
+		    document.getElementById(page).style.display = "none";
+		});
+		document.getElementById("home-page").style.display = "block";
+		loadCourses();
 	});
 	
 	let homePage = document.getElementById("home-page")
@@ -71,23 +78,31 @@ document.addEventListener("DOMContentLoaded", () => {
 	//back buttons
 	document.getElementById("backbutton-exam").addEventListener("click", () => {
 	  sessionStorage.setItem("currentSection", "home-page");
-	  window.location.reload(); 
+	  homePage.style.display = "block";
+	  examPage.style.display = "none";
+	  loadCourses(); 
 	});
 	document.getElementById("backbutton-grade-form").addEventListener("click", () => {
-	  window.location.reload();
+		enrolledStudentsPage.style.display = "block";
+		formGradePage.style.display = "none";
+		loadEnrolledStudents(id);
 	});
 	document.getElementById("backbutton-allreports").addEventListener("click", () => {
-	  sessionStorage.setItem("currentSection", "home-page");
-	  window.location.reload();
+		sessionStorage.setItem("currentSection", "home-page");
+		homePage.style.display = "block";
+		allReportsPage.style.display = "none";
+		loadCourses(); 
   	});	
 	
 	//allReport buttons
 	document.getElementById("allreport-button-home").addEventListener("click", () =>{
+		sessionStorage.setItem("currentSection", "allreports-page");
 		homePage.style.display = "none";
 		allReportsPage.style.display = "block";
 		loadAllReports();
 	});
 	document.getElementById("allreport-button-report").addEventListener("click", () =>{
+		sessionStorage.setItem("currentSection", "allreports-page");
 		reportPage.style.display = "none";
 		allReportsPage.style.display = "block";
 		loadAllReports();
@@ -107,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.getElementById("backbutton-multi").addEventListener("click", () => {
 		multiInsertPage.style.display = "none";
 		multiOverlay.style.display = "none";
-		//updateMultiGrade();
 	});
 	
 	//modify grade button
@@ -119,7 +133,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	        if (req.readyState == XMLHttpRequest.DONE) {
 	          if (req.status === 200) {
 				//alert("Voto inserito con successo!");
-			  	window.location.reload();
+				formGradePage.style.display = "block";
+				formGradePage.style.display = "none";
+				loadEnrolledStudents();
 	          }else{
 				console.error(`Errore inserimento voto per studente ${req.status} ${req.responseText}`);
 			  }
@@ -169,6 +185,7 @@ function loadCourses() {
 		  document.getElementById("show_courses").style.display = "none";
 		  document.getElementById("no_show_courses").style.display = "block";
 		} else {
+		  document.getElementById("show_courses").style.display = "block";
 		  document.getElementById("no_show_courses").style.display = "none";
 		  renderCourses(courses);
 		}
@@ -212,6 +229,7 @@ function loadExaminations(id) {
 		  document.getElementById("show_examinations").style.display = "none";
 		  document.getElementById("no_show_examinations").style.display = "block";
 		} else {
+		  document.getElementById("show_examinations").style.display = "block";
 		  document.getElementById("no_show_examinations").style.display = "none";
 		  renderExaminations(examinations);
 		}
@@ -258,6 +276,7 @@ function loadEnrolledStudents(id) {
 		  document.getElementById("show_enrolled").style.display = "none";
 		  document.getElementById("no_show_enrolled").style.display = "block";
 		} else {
+		  document.getElementById("show_enrolled").style.display = "block";
 		  document.getElementById("no_show_enrolled").style.display = "none";
 		  renderStudents();
 		}
@@ -275,7 +294,7 @@ function loadEnrolledStudents(id) {
 				    if (req.readyState == XMLHttpRequest.DONE) {
 				      if (req.status === 200) {
 						//alert("Voti inseriti con successo!");
-					  	window.location.reload();
+						loadEnrolledStudents(examination.idExam);
 				      }else{
 						console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
 					  }
@@ -286,8 +305,9 @@ function loadEnrolledStudents(id) {
 		});
 		document.getElementById("report-button").addEventListener('click', () => { 
 			const publishedStudents = enrolledStudents.filter(s => s.evaluationState==="pubblicato");
-			if(publishedStudents.length === 0) {
-				alert("Non ci sono studenti in stato 'pubblicato'");	
+			const rejectedStudents = enrolledStudents.filter(s => s.evaluationState==="rifiutato")
+			if(publishedStudents.length === 0 && rejectedStudents.length === 0) {
+				alert("Non ci sono studenti con 'pubblicato' o 'rifiutato' per cui verbalizzare il voto");	
 			} else {
 				makeCall("GET", "CreateReport?id=" + examination.idExam, null, (req) => {
 				  if (req.readyState == XMLHttpRequest.DONE) {
@@ -296,7 +316,9 @@ function loadEnrolledStudents(id) {
 					const idReport = JSON.parse(req.responseText);
 					sessionStorage.setItem("selectedId", idReport);
 					sessionStorage.setItem("currentSection", "report-page");
-				  	window.location.reload();
+					document.getElementById("report-page").style.display = "block";
+					document.getElementById("enrolled-students-page").style.display = "none";
+					loadReport(idReport)
 				    }else{
 					console.error(`Errore pubblicazione voto per studente ${req.status} ${req.responseText}`);
 				  }
@@ -382,6 +404,7 @@ function loadAllReports() {
 		  document.getElementById("show_reports").style.display = "none";
 		  document.getElementById("no_show_reports").style.display = "block";
 		} else {
+		  document.getElementById("show_reports").style.display = "block";
 		  document.getElementById("no_show_reports").style.display = "none";
 		  renderAllReports(reports);
 		}
@@ -437,7 +460,9 @@ function loadReport(id) {
 		document.getElementById("backbutton-report").addEventListener("click", () => {
 		  sessionStorage.setItem("currentSection", "enrolled-students-page");
 		  sessionStorage.setItem("selectedId", report.idExam);
-		  window.location.reload();
+		  document.getElementById("enrolled-students-page").style.display = "block";
+		  document.getElementById("report-page").style.display = "none";
+		  loadEnrolledStudents(report.idExam);
 	  	});
       } else {
 		document.getElementById("error-message").innerHTML = "<p>Errore nel caricamento degli studenti iscritti</p>";
@@ -582,7 +607,9 @@ function updateMultiGrade() {
         if (completed === multiGrade.length) {
           if (errors === 0) {
             //alert("Voti inseriti con successo!");
-            window.location.reload();
+			document.getElementById("multi-insert-page").style.display = "none";
+			document.getElementById("modal-overlay").style.display = "none";
+			loadEnrolledStudents(item.idExamination);
           } else {
             alert("Alcuni voti non sono stati inseriti correttamente. Controlla la console.");
           }
